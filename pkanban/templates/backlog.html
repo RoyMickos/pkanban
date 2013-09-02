@@ -1,0 +1,24 @@
+<table id="backlog_tasks">
+	<thead class="dojoblue">
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Last modified</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% if backlog %}
+			{% for entry in backlog %}
+			<tr>
+				<td> <a href="{{entry.get_absolute_url}}">{{ entry.name }} </a></td>
+				<td class="description_short"> {{ entry.description|striptags|truncatechars:30 }} </td>
+				<td> {{entry.lastmodify|date:"D d-M-Y H:i"}}</td>
+			</tr>
+			{% endfor %}
+		{% else %}
+		<tr><td colspan="3" class="remark">No tasks in backlog.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+

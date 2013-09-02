@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='UTF-8' />
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" media="screen" />		
+		<link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
+		<!-- dojoConfig = {parseOnLoad: true}</script-->
+		<title>Personal Kanban</title>
+	</head>
+	<body class="claro pkanban">
+		<p class="area">Work-In-Progress</p>{% csrf_token %}
+		<div id="board_wrapper">
+			<div id="board"></div>
+		</div>
+		
+		<p class="area">Backlog</p>
+		<div id="blog_wrapper">
+			<div id="backlog">
+				<p>Backlog shown here</p>
+			</div>
+		</div>
+		<a href="/pkanban/Task/NewTask/">
+			<button id="newtaskbtn" data-dojo-type="dijit/form/Button"
+				data-dojo-props="
+					iconClass:'dijitIconNewTask',
+					title:'Add new task to backlog.'">New Backlog task</button>
+			</a>
+		<div id="menu">
+			<p>	
+				<a href="/pkanban/streams">Edit Phases and Valuestreams</a>
+				<a href="/pkanban/archive/">View completed tasks</a>
+			</p>
+		</div>
+				<p>
+					&copy; Copyright  by Roy Mickos
+				</p>
+		{% if dev %}
+		<!--script type="text/javascript" src="/static/js/src/jquery-1.9.1.min.js"></script-->
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/dojoConfig.js"></script>
+		<!--script data-main="/static/js/pkanban.js" src="/static/js/src/dojo/dojo.js"></script-->
+		<script src="/static/js/src/dojo/dojo.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/pkanban.js"></script>
+		{% else %}
+		<script type="text/javascript" src="{{ STATIC_URL }}js/pklib.js"></script>
+		{% endif %}        
+	</body>
+</html>

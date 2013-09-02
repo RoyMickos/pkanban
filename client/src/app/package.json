@@ -1,0 +1,10 @@
+{
+    "name": "app",
+    "description": "The pkanban application",
+    "version": "1.0",
+    "keywords": ["JavaScript", "Dojo", "jquery"],
+    "maintainers": [{
+        "name": "Roy Mickos"
+    }],
+    "dojoBuild": "package.js"
+}

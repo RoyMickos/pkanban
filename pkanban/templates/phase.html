@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="/static/js/lib/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/newphase.js"></script>
+</head>
+<body>
+<form method="post" onsubmit="return validateForm();">{% csrf_token %}
+	<table>
+	<div class="fieldWrapper">
+		<tr>
+			<td>
+			<label for="id_name" class="newPhaseForm">Name:</label>
+			</td><td>
+			<div id="name_errors"></div>
+			{{ form.name }}
+			</td>
+		</tr>
+	</div>
+	<div class="fieldWrapper">
+		<tr>
+			<td>
+			<label for="id_capacity" class="newPhaseForm">Capacity"</label>
+			</td><td>
+				{{ form.capacity }}
+			</td>
+		</tr>
+	</div>
+	<div class="fieldWrapper">
+		<tr>
+			<td><label for="id_description" class="newTaskForm">Description:</label></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td id="description_holder" colspan="2">
+			{{ form.description }}
+			</td>
+		</tr>
+	</div>
+	</table>
+	<input type="submit" value="Submit"><input type="button" value="Cancel" onclick="return goBack()">
+</form>
+<div id="message"></div>
+</body>
+</html>

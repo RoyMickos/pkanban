@@ -1,0 +1,4 @@
+recursive-include pkanban/static *.css *.mp3 *.png *.js *.ico
+prune pkanban/static/js/lib
+include pkanban/templates/*.html
+include pkanban/templates/*.json

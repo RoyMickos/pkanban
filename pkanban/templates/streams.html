@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='UTF-8' />
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" media="screen" />		
+		<link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
+		<!-- script>dojoConfig = {parseOnLoad: true}</script -->
+		<title>Edit phases and valuestreams</title>
+	</head>
+	<body class="claro stream">
+<button id="cancel_btn" data-dojo-type="dijit/form/Button"
+		data-dojo-props="
+			iconClass:'pkanbanMainView',
+			showLabel:false,
+			title:'Cancel and go back to board.'">
+	<script type="dojo/on" data-dojo-event="click" data-dojo-args="evt">
+		require(["dojo/domReady!"], function()
+		{
+			location.assign('/pkanban/');
+		});
+	</script>
+</button>
+
+		<h3>Work phases</h3>
+		<p><i>Phases</i> represent states of a task. The most obvious one is <tt>backlog</tt> where identified
+		   but idle tasks are kept. After you decide to work on a task it may be in <tt>task</tt>
+		   state, after which it might go into <tt>under review</tt> state etc. These chains
+		   of states that are needed in order to complete a task are called <i>valuestreams.</i></p>
+		   <p>A phase is defined with 3 attributes:
+		   <ul>
+		   		<li><i>Name</i> is a unique idenfier for a phase</li>
+		   		<li><i>Capacity</i> defines how many tasks can be in this phase at the same time. Tasks in phases 
+		   			other than backlog or completed are called work-in-progress and the goal is to <i>minimize</i>
+		   			number of tasks in WIP at a time. So, the smaller the number is, the better.</li>
+		   		<li><i>Description</i> describes the purpose of the phase.</li>
+		   </ul>
+		   </p>
+		<table id="phaselist">{% csrf_token %}
+			<tr><th>Name</th><th>Capacity</th><th>Description</th><th></th></tr>
+			<tr class="fixed_phase"><td class="pname">backlog</td><td>unlimited</td><td>tasks waiting to be acted upon</td></tr>
+			<tr class="fixed_phase"><td class="pname">completed</td><td>unlimited</td><td>closed tasks in archieve</td></tr>
+		{% if phases %}
+		{% for phase in phases %}
+		<tr><td class="pname">{{ phase.name }}</td> <td>{{ phase.capacity }}</td> <td>{{ phase.description }}</td><td></td></tr>
+		{% endfor %}
+		{% else %}
+		<tr><td colspan="3">No phases defined.</td></tr>
+		{% endif %}
+		<tr> 
+			<td><div id="pname_wrapper"><input id="pname"/></div></td> <td><input id="pcapa"/></td>
+			<td><input id="pdesc" /></td>
+			<td><input type="button" value="New Phase" id="npbutton"/></td>
+		</tr>
+		</table>
+		<!--		<p><a href="/pkanban/newphase">
+			<input type="button" id="phasebtn" value="New phase" class="pkbutton"></input></a></p>
+		-->
+		<div id="newphase"></div>
+		<h3>Valuestreams</h3>
+		<p>To define a valuestream:
+			<ul> 
+				<li>give it a name,</li>
+				<li>click on "new valuestream" button,</li> 
+				<li>then select from the phases above by clicking the name of the phase <i>in the order in 
+					which the tasks will flow through the valuestream</i></li>
+			</ul>
+		</p>
+		<table id="streamlist">
+			<tr><th>Name</th><th>Phases</th><th></th></tr>
+		{% if vstreams %}
+		{% for vstream in vstreams %}
+		<tr>
+			<td class="vname">{{ vstream.streamname }}</td> 
+			<td>{% for phase in vstream.phases.all %}{{phase.name}} - {% endfor %}</td> 
+			<td></td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<tr><td colspan=3>No valuestreams defined.</td></tr>
+		{% endif %}
+		<tr>
+			<td><div id="vname_wrapper"><input id="vname"/></div></td>
+			<td id="vphases">
+				<span id="backlog_wrapper" class="info"></span>
+				<span id="phases_wrapper"></span>
+				<span id="completed_wrapper" class="info"></span>
+			</td>
+			<td id="button_wrapper"><input type="button" value="New valuestream" id="nvbutton"/></td>
+		</tr>
+		</table>
+		<div id="message"></div>
+		{% if dev %}
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/dojoConfigChild.js"></script>
+		<!-- script type="text/javascript" src="/static/js/src/jquery-1.9.1.min.js"></script -->
+		<script data-main="/static/js/streams.js" src="/static/js/src/dojo/dojo.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/streams.js"></script>
+		{% else %}
+		<script type="text/javascript" src="{{ STATIC_URL }}js/streamlib.js"></script>
+		{% endif %}        
+	</body>
+</html>

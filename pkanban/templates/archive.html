@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<title>archive</title>
+		<meta name="description" content="archived tasks of personal kanban" />
+		<meta name="author" content="Roy Mickos" />
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" media="screen" />		
+		<link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />	
+		<script>dojoConfig = {parseOnLoad: true}</script>
+	</head>
+
+	<body class="claro">
+		<div>
+			<h3 class="dojoblue">Completed tasks</h3>
+			<div>
+<button id="cancel_btn" data-dojo-type="dijit/form/Button"
+		data-dojo-props="
+			iconClass:'pkanbanMainView',
+			showLabel:false,
+			title:'Cancel and go back to board.'">
+	<!--script type="dojo/on" data-dojo-event="click" data-dojo-args="evt">
+		require(["dojo/domReady!"], function()
+		{
+			location.assign('/pkanban/');
+		});
+	</script-->
+</button>
+
+<table>
+	<thead class="dojoblue">
+		<tr>
+			<th>Task</th>
+			<th>Description</th>
+			<th>Completed</th>
+			<th>Effort</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% if tasks %}
+			{% for task in tasks %}
+			<tr>
+				<td> <a href="{{task.get_absolute_url}}">{{ task.name }}</a></td>
+				<td> {{ task.description|striptags|truncatechars:40 }} </td>
+				<td> {{ task.completed|date:"d-M-Y" }} </td>
+				<td> {{ task.hourlyEffort }} </td>
+			</tr>
+			{% endfor %}
+		{% else %}
+		<tr><td colspan="3" class="remark">No completed tasks.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+<p>Effort in hours:minutes.</p>
+			</div>
+
+			<footer>
+				<p>
+					&copy; Copyright  by Roy Mickos
+				</p>
+			</footer>
+		</div>
+		{% if dev %}
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/dojoConfigChild.js"></script>		
+		<script src="{{ STATIC_URL }}js/src/dojo/dojo.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}js/src/app/archive.js"></script>
+		{% else %}
+		<script src="{{ STATIC_URL }}js/archivelib.js"></script>
+		{% endif %}
+	</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends "NewTask.html" %}
+{% block valuestream_chooser %}
+	<div class="fieldWrapper">
+		<tr>
+			<td>Valuestream:</td>
+			<td>
+				<div id="valuestream_chooser">
+{% if task.valuestream %}
+<div id="valuestream"> <span id="valuestream_value"> {{task.valuestream.streamname}} </span></div>
+{% else %}
+    {% if valuestreams %}
+<select id="vstream_select" data-dojo-type="dijit/form/Select">
+<option value=" ">--SELECT VALUESTREAM--</option>
+    	{% for stream in valuestreams %}
+<option value="{{stream.streamname}}">{{stream.streamname}}</option>
+    	{% endfor %}
+</select>
+    {% else %}
+<a href="/streams" />
+    <input type="button" value="Edit valuestreams and phases"></input>
+</a>
+    {% endif %}
+{% endif %}
+				</div>
+			</td>
+		</tr>
+{% if task.valuestream and not isCompleted%}
+		<tr class="minorinfo">
+			<td >Current phase:</td>
+			<td>{{status.currentPhase.name}}</td>
+		</tr>
+		<tr class="minorinfo">
+			<td>Next phase:</td>
+			<td>{{status.nextPhase}} {% if status.canProceed %} (has capacity) {% else %} (FULL) {% endif %}</td>
+		</tr>
+{% endif %}
+	</div>
+{% endblock %}
+{% block task_staticdata %}
+<pre>{{ task.history }}</pre>
+<div id="lastmodify" hidden> {{task.lastmodify}} </div>
+{% endblock %}
