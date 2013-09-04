@@ -23,7 +23,7 @@ require({
 		'dojo',
 		'dijit',
 		'dojox',
-		{name: "jquery", location: "jquery", main: "jquery-1.9.1.min"},
+		{name: "jquery", location: "jquery", main: "jquery.min"},
 		// For reference, this is what a more verbose package declaration looks like.
 		{ name: 'app', location: 'app', map: {} }
 	]

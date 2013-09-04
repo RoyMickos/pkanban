@@ -1,0 +1,76 @@
+<project name="pkanban" default="hello" basedir=".">
+	<description>
+		Create a pkanban distribution package. It will be a python package, that embeds
+		built javascript files.
+	</description>
+	<!-- Helper target to play with ant behaviour -->
+	<target name="hello">
+		<echo>This is a test</echo>
+		<path id="dojo.archive.files">
+			<first>
+				<fileset dir="etc/libs" includes="*.gz" />
+			</first>
+		</path>
+		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
+		<basename property="dojo.revision" file="${dojo.archive}" suffix="tar.gz"/>
+		<echo>${dojo.revision}</echo>
+	</target>
+	
+	<!--
+		Common properties
+	-->
+	<property name="django.test.server" value="localhost:5001" />
+	
+	<!-- 
+		We need to install dependent libraries to the build environment. For simplicity
+		jquery and qunit libraries are stored directly in git as they are minified versions.
+		However, dojo source is useful in development so we keep them as tar.gz in etc/libs
+		and deploy them to the development environment before use.
+		check-dojo-deployment checks whether the dojo source directories exists, and
+		deploy-dojo does the actual deployment. 
+	-->
+	<target name="check-dojo-deployment">
+		<condition property="dojo.deployed">
+			<and>
+				<available file="client/src/dojo" type="dir" />
+				<available file="client/src/dojox" type="dir" />
+				<available file="client/src/dijit" type="dir" />
+				<available file="client/src/util" type="dir" />
+			</and>
+		</condition>
+	</target>
+	<target name="deploy-dojo" unless="dojo.deployed" depends="check-dojo-deployment">
+		<echo>Deploying dojo development files</echo>
+		<path id="dojo.archive.files">
+			<first>
+				<fileset dir="etc/libs" includes="*.gz" />
+			</first>
+		</path>
+		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
+		<property name="tmpdir" value="tmp" />
+		<mkdir dir="${tmpdir}" />
+		<exec executable="tar" dir="${tmpdir}">
+			<arg value="-zxvf"/>
+			<arg value="${dojo.archive}"/>
+		</exec>
+		<basename property="dojo.revision" file="${dojo.archive}" suffix="tar.gz"/>
+		<move todir="client/src">
+			<fileset dir="${tmpdir}/${dojo.revision}" />
+		</move>
+		<delete dir="${tmpdir}"/>
+	</target>
+	
+	<!--
+		Run configured tests for django 
+	-->
+	<target name="run-django-tests-devel">
+		<echo>Run django tests in development environment</echo>
+		<exec executable="python" dir=".">
+			<arg value="manage.py" />
+			<arg value="test" />
+			<arg value="--liveserver=${django.test.server}" />
+			<arg value="pkanban" />
+		</exec>
+	</target>
+	
+</project>

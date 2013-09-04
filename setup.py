@@ -1,18 +1,19 @@
 import os
 from setuptools import setup
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='pkanban',
-    version='0.2',
+    version='0.3',
     packages=['pkanban'],
     package_dir={'pkanban': 'pkanban'},
-    package_data={'pkanban': ['static/*.css','static/*.ico','static/audio/*.mp3','static/images/*.png',
-                              'static/js/*.js', 'templates/*.html', 'templates/*.json']},
+    package_data={'pkanban': ['../client/lib/index.html','../client/lib/app/resources/*.ico','../client/lib/app/resources/*.css',
+                              '../client/lib/app/resources/images/*.png','../client/lib/app/resources/audio/*.mp3',
+                              '../client/lib/dojo/dojo.js']},
     include_package_data=True,
     license='BSD License',  # example license
     description='A simple Django web app for personal kanban task management',

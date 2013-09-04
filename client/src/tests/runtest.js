@@ -23,7 +23,7 @@ require({
 		'dojo',
 		'dijit',
 		'dojox',
-		{name: "jquery", location: "jquery", main: "jquery-1.9.1.min"},
+		{name: "jquery", location: "jquery", main: "jquery.min"},
 		// qunit is to be loaded from the test page
 		// For reference, this is what a more verbose package declaration looks like.
 		{ name: 'tests', location: 'tests', map: {} }

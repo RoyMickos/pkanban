@@ -1,12 +1,10 @@
+*~
 *.pyc
 *.log
-.project
 client/src/dgrid/
 client/src/dijit/
 client/src/dojo/
 client/src/dojox/
-client/src/jquery/
-client/src/qunit/
 client/src/put-selector/
 client/src/util/
 client/src/xstyle/
