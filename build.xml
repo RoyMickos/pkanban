@@ -3,23 +3,21 @@
 		Create a pkanban distribution package. It will be a python package, that embeds
 		built javascript files.
 	</description>
-	<!-- Helper target to play with ant behaviour -->
-	<target name="hello">
-		<echo>This is a test</echo>
-		<path id="dojo.archive.files">
-			<first>
-				<fileset dir="etc/libs" includes="*.gz" />
-			</first>
-		</path>
-		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
-		<basename property="dojo.revision" file="${dojo.archive}" suffix="tar.gz"/>
-		<echo>${dojo.revision}</echo>
-	</target>
-	
 	<!--
 		Common properties
 	-->
+	<property environment="env"/>
+	<!-- BUILD_NUMBER is defined by Jenkins, env.HOME is home directory location in Linux -->
+	<property name="build.dir" value="${env.HOME}/tmp/build_${env.BUILD_NUMBER}"/>  
+	<property name="build.log.dir" value="${build.dir}/log" />
 	<property name="django.test.server" value="localhost:5001" />
+	<property name="build.tools.dir" value="etc/buildtools" />
+	
+	<!-- Helper target to play with ant behaviour -->
+	<target name="hello">
+		<echo>This is a test</echo>
+		<echo>${env.HOME} -- ${env.BUILD_NUMBER}</echo>
+	</target>
 	
 	<!-- 
 		We need to install dependent libraries to the build environment. For simplicity
@@ -49,7 +47,7 @@
 		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
 		<property name="tmpdir" value="tmp" />
 		<mkdir dir="${tmpdir}" />
-		<exec executable="tar" dir="${tmpdir}">
+		<exec executable="tar" dir="${tmpdir}" output="${build.log.dir}/deploy-dojo-tar.log">
 			<arg value="-zxvf"/>
 			<arg value="${dojo.archive}"/>
 		</exec>
@@ -63,14 +61,38 @@
 	<!--
 		Run configured tests for django 
 	-->
-	<target name="run-django-tests-devel">
-		<echo>Run django tests in development environment</echo>
-		<exec executable="python" dir=".">
+	<target name="run-django-backend-tests-devel">
+		<echo>Run django back-end tests in development environment</echo>
+		<exec executable="python" dir="." output="${build.log.dir}/run-django-backend-tests-devel.log">
 			<arg value="manage.py" />
 			<arg value="test" />
 			<arg value="--liveserver=${django.test.server}" />
 			<arg value="pkanban" />
 		</exec>
+	</target>
+	<target name="run-browser-tests-devel">
+		<echo>Run selenium functional tests in development environment</echo>
+		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
+		<parallel timeout="60000">
+			<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
+				<arg value="${build.tools.dir}/start_process.py" />
+				<arg value="django" />
+				<arg value="python" />
+				<arg value="manage.py" />
+				<arg value="runserver" />
+				<arg value="4000" />
+			</exec>
+			<sequential>
+				<sleep seconds="20" />
+				<exec executable="python" dir="etc/testtools">
+					<arg value="browser_tests.py" />
+				</exec>
+				<exec executable="python" dir=".">
+					<arg value="${build.tools.dir}/stop_process.py" />
+					<arg value="django.pid" />
+				</exec>
+			</sequential>
+		</parallel>
 	</target>
 	
 </project>

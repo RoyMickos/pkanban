@@ -7,7 +7,7 @@ Replace this with more appropriate tests for your application.
 
 import unittest
 import back_end_tests as bt
-from pktestlib import front_end_tests as ft
+#from pktestlib import front_end_tests as ft
 
 def suite():
-    return unittest.TestSuite([bt.suite(),ft.suite()])
+    return bt.suite()
