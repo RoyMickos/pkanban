@@ -18,6 +18,10 @@
 		<echo>This is a test</echo>
 		<echo>${env.HOME} -- ${env.BUILD_NUMBER}</echo>
 	</target>
+
+	<target name="init-build">
+		<mkdir dir="${build.log.dir}"/>
+	</target>
 	
 	<!-- 
 		We need to install dependent libraries to the build environment. For simplicity
@@ -70,29 +74,26 @@
 			<arg value="pkanban" />
 		</exec>
 	</target>
-	<target name="run-browser-tests-devel">
+	<target name="run-browser-tests-devel" depends="init-build">
 		<echo>Run selenium functional tests in development environment</echo>
 		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
 		<parallel timeout="60000">
-			<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
-				<arg value="${build.tools.dir}/start_process.py" />
-				<arg value="django" />
-				<arg value="python" />
-				<arg value="manage.py" />
-				<arg value="runserver" />
-				<arg value="4000" />
-			</exec>
+			<daemons>
+				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
+					<arg value="manage.py" />
+					<arg value="runserver" />
+					<arg value="4000" />
+				</exec>
+			</daemons>
 			<sequential>
 				<sleep seconds="20" />
 				<exec executable="python" dir="etc/testtools">
 					<arg value="browser_tests.py" />
 				</exec>
-				<exec executable="python" dir=".">
-					<arg value="${build.tools.dir}/stop_process.py" />
-					<arg value="django.pid" />
-				</exec>
+				<exec executable="etc/buildtools/stopserver.sh" dir="." />
 			</sequential>
 		</parallel>
 	</target>
 	
 </project>
+
