@@ -12,6 +12,7 @@ client/lib/
 dist/
 pkanban.egg-info/
 devel_site/
+compiled_site/
 selenium/
 conf/
 manage.py

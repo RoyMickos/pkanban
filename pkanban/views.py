@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
 
-dev = True
+dev = False
 
 @csrf_protect
 def show_board(request):
@@ -28,7 +28,10 @@ def show_spa(request):
     show the single page application version of the ui
     """
     c = RequestContext(request)
-    return render_to_response('src/index.html', c)
+    if dev:
+        return render_to_response('src/index.html', c)
+    else:
+        return render_to_response('lib/index.html', c)
 
 def setValuestream(aTask, requestData, valuestreams, log):
     sname = requestData['valuestream'].strip()

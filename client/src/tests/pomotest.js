@@ -48,11 +48,11 @@ define(['../app/PkPomodoro', 'jquery', 'dojo/domReady!'], function(PkPomodoro, $
 				window.setTimeout(function() {
 									ok(($.trim($("#pkpomodoro").text()) > '0:00'));
 									$("#pkpomodoro").trigger("click");
-									equal(2,pomo.get("value"),"timer counted 2 seconds");
+									equal(pomo.get("value"),2,"timer counted 2 seconds");
 									ok(wasInterrupted, "timer expiration due to interrupt");
 									start();
 								  },
-								  2000);
+								  2500);
 			}
 		);
 		asyncTest("test timer expiration",
@@ -65,7 +65,7 @@ define(['../app/PkPomodoro', 'jquery', 'dojo/domReady!'], function(PkPomodoro, $
 					ok(!wasInterrupted);
 					start();
 				},
-				2000);
+				2500);
 			}
 		);
 

@@ -16,7 +16,10 @@
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
 		<echo>This is a test</echo>
-		<echo>${env.HOME} -- ${env.BUILD_NUMBER}</echo>
+		<replaceregexp file="client/src/app/run.js"
+			           match="^\s*baseUrl:\s*'/client/lib/'"
+			           replace="    baseUrl: '/client/src/'"
+			           byline="true"/>
 	</target>
 
 	<target name="init-build">
@@ -63,7 +66,9 @@
 	</target>
 	
 	<!--
-		Run configured tests for django 
+		Targets for development environment: run django backend tests using django's framework,
+		then run selenium tests through browser. TODO: run qunit front-end unit tests. Running would
+		be easy, how about storing the test results?
 	-->
 	<target name="run-django-backend-tests-devel">
 		<echo>Run django back-end tests in development environment</echo>
@@ -76,8 +81,9 @@
 	</target>
 	<target name="run-browser-tests-devel" depends="init-build">
 		<echo>Run selenium functional tests in development environment</echo>
+		<echo>Run qunit javascript unit tests in development environment</echo>
 		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
-		<parallel timeout="60000">
+		<parallel timeout="90000">
 			<daemons>
 				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
 					<arg value="manage.py" />
@@ -90,10 +96,47 @@
 				<exec executable="python" dir="etc/testtools">
 					<arg value="browser_tests.py" />
 				</exec>
+				<exec executable="python" dir="etc/testtools">
+					<arg value="qunit_tests.py" />
+				</exec>
+				<move file="etc/testtools/qunit_result.txt" todir="${build.dir}"/>
 				<exec executable="etc/buildtools/stopserver.sh" dir="." />
 			</sequential>
 		</parallel>
 	</target>
+	
+	<!--
+		Compile javascript
+		We're using the build.sh from dojo boilerplate
+	-->
+	<target name="compile-javascript">
+		<echo>MODIFYING SOURCE: changing baseUrl in client/src/app/run.js</echo>
+		<replaceregexp file="client/src/app/run.js"
+			           match="^\s*baseUrl:\s*'/client/src/'"
+			           replace="    baseUrl: '/client/lib/'"
+			           byline="true"/>		
+		<exec executable="./build.sh" dir="client" />
+		<echo>MODIFYING SOURCE: undoing previous baseUrl change in client/src/app/run.js</echo>
+		<replaceregexp file="client/src/app/run.js"
+			           match="^\s*baseUrl:\s*'/client/lib/'"
+			           replace="    baseUrl: '/client/src/'"
+			           byline="true"/>		
+		<copy file="client/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
+	</target>
+	
+	<!--
+		Create python tarball. 
+	-->
+	<target name="create-python-distribution">
+		<exec executable="python" dir=".">
+			<arg value="setup.py" />
+			<arg value="sdist" />
+		</exec>
+	</target>
+	
+	<!-- 
+		Deploy release using chef + vagrant
+	-->
 	
 </project>
 

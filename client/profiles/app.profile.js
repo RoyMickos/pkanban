@@ -14,7 +14,7 @@ var profile = {
 	// `basePath` is relative to the directory containing this profile file; in this case, it is being set to the
 	// src/ directory, which is the same place as the `baseUrl` directory in the loader configuration. (If you change
 	// this, you will also need to update run.js.)
-	basePath: '../src/',
+	basePath: '../src',
 
 	// This is the directory within the release directory where built packages will be placed. The release directory
 	// itself is defined by `build.sh`. You should probably not use this; it is a legacy option dating back to Dojo
@@ -63,8 +63,12 @@ var profile = {
 			// the main application `app/main` and the `dojo/i18n` and `dojo/domReady` modules because, while they are
 			// all conditional dependencies in `app/main`, we do not want to have to make extra HTTP requests for such
 			// tiny files.
-			include: [ 'dojo/i18n', 'dojo/domReady', 'app/main', 'app/run', 'app/PkApp', 'app/PkModel', 'app/PkPomodoro' ],
-
+			include: [ 'dojo/i18n', 'dojo/on', 'dojo/request/xhr', 'dojo/domReady', 
+					   'dijit/ProgressBar', 'dijit/layout/BorderContainer', 'dijit/layout/ContentPane',
+					   'dijit/layout/TabContainer',
+					   'app/main', 'app/run', 'app/PkApp', 'app/PkModel', 'app/PkPomodoro'],
+			// we need to include at least en-us locale, otherwise production load will fail
+			includeLocales: ['en-us'],
 			// By default, the build system will try to include `dojo/main` in the built `dojo/dojo` layer, which adds
 			// a bunch of stuff we do not want or need. We want the initial script load to be as small and quick to
 			// load as possible, so we configure it as a custom, bootable base.

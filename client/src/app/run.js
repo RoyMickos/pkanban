@@ -10,7 +10,11 @@ require({
 	// The base path for all packages and modules. If you don't provide this, baseUrl defaults to the directory
 	// that contains dojo.js. Since all packages are in the root, we just leave it blank. (If you change this, you
 	// will also need to update `app.profile.js`).
-	baseUrl: '/client/src/',
+	// this has to match STATIC_URL in django so that django won't process this. unfortunately, this creates a
+	// problem in that production and development configurations will differ. in development we use /client/src/
+	// while in production we use /client/lib/
+	// BUILD WILL CHANGE SOURCE
+    baseUrl: '/client/src/',
 
 	// A list of packages to register. Strictly speaking, you do not need to register any packages,
 	// but you can't require "app" and get app/main.js if you do not register the "app" package (the loader will look
@@ -26,6 +30,10 @@ require({
 		{name: "jquery", location: "jquery", main: "jquery.min"},
 		// For reference, this is what a more verbose package declaration looks like.
 		{ name: 'app', location: 'app', map: {} }
-	]
+	],
+	// during build we create a sibling directory structure and point to that. baseurl needs to be reconfigured so
+	// that dijit internal references to html templates are routed to client/lib instead of client/src
+	// this is a result from using javascript from django
+	build: { baseUrl: '/client/src/'}
 // Require `app`. This loads the main application module, `app/main`, since we registered the `app` package above.
 }, [ 'app' ]);

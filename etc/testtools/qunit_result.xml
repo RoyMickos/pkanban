@@ -1,0 +1,6 @@
+pomodoro test 1: test pomodoro start-stop (0, 4, 4)Rerun
+2532 ms
+pomodoro test 1: test timer expiration (0, 2, 2)Rerun
+2518 ms
+pomodoro test 2: test setting default value (0, 1, 1)Rerun
+11 ms

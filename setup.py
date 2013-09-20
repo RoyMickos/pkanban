@@ -13,7 +13,10 @@ setup(
     package_dir={'pkanban': 'pkanban'},
     package_data={'pkanban': ['../client/lib/index.html','../client/lib/app/resources/*.ico','../client/lib/app/resources/*.css',
                               '../client/lib/app/resources/images/*.png','../client/lib/app/resources/audio/*.mp3',
-                              '../client/lib/dojo/dojo.js']},
+                              '../client/lib/dojo/dojo.js','../client/lib/app/run.js',
+                              '../client/lib/dijit/layout/templates/*.html', '../client/lib/dijit/form/templates/*.html',
+                              '../client/lib/dijit/templates/*.html',
+                              '../client/lib/dijit/themes/claro/form/images/buttonArrows.png']},
     include_package_data=True,
     license='BSD License',  # example license
     description='A simple Django web app for personal kanban task management',
