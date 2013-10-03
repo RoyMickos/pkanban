@@ -1,4 +1,9 @@
-recursive-include pkanban/static *.css *.mp3 *.png *.js *.ico
-prune pkanban/static/js/lib
-include pkanban/templates/*.html
-include pkanban/templates/*.json
+recursive-include ../client/lib/app/resources *.css *.mp3 *.png *.js *.ico
+include README.md
+include client/lib/dojo/dojo.js
+include client/lib/app/run.js
+include client/lib/dijit/layout/templates/*.html
+include client/lib/dijit/form/templates/*.html
+include client/lib/dijit/templates/*.html
+include client/lib/dijit/themes/claro/form/images/buttonArrows.png
+

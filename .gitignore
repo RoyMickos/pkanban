@@ -16,4 +16,5 @@ compiled_site/
 selenium/
 conf/
 manage.py
+etc/chef-repo/.chef/
 
