@@ -3,16 +3,18 @@
 set -e
 
 # Base directory for this entire project
-BASEDIR=$(cd $(dirname $0) && pwd)
+BASEDIR=$(cd $(dirname $0)/../.. && pwd)
 
 # Source directory for unbuilt code
-SRCDIR="$BASEDIR/src"
+SRCDIR="$BASEDIR/pkanban/dev/static/src"
+HTMLSRCDIR="$BASEDIR/pkanban/dev/templates"
 
 # Directory containing dojo build utilities
 TOOLSDIR="$SRCDIR/util/buildscripts"
 
 # Destination directory for built code
-DISTDIR="$BASEDIR/lib"
+DISTDIR="$BASEDIR/pkanban/static/pkanban"
+HTMLDISTDIR="$BASEDIR/pkanban/templates/pkanban"
 
 # Module ID of the main application package loader configuration
 LOADERMID="app/run"
@@ -21,7 +23,7 @@ LOADERMID="app/run"
 LOADERCONF="$SRCDIR/$LOADERMID.js"
 
 # Main application package build configuration
-PROFILE="$BASEDIR/profiles/app.profile.js"
+PROFILE="$BASEDIR/etc/buildtools/profiles/app.profile.js"
 
 # Configuration over. Main application start up!
 
@@ -52,11 +54,16 @@ cd "$BASEDIR"
 LOADERMID=${LOADERMID//\//\\\/}
 
 # Copy & minify index.html to dist
-cat "$SRCDIR/index.html" | tr '\n' ' ' | \
+cat "$HTMLSRCDIR/index.html" | tr '\n' ' ' | \
 perl -pe "
   s/<\!--.*?-->//g;                          # Strip comments
   s/isDebug: *1/deps:['$LOADERMID']/;        # Remove isDebug, add deps
   s/<script src=\"$LOADERMID.*?\/script>//;  # Remove script app/run
-  s/\s+/ /g;                                 # Collapse white-space" > "$DISTDIR/index.html"
+  s/\s+/ /g;                                 # Collapse white-space" > "$HTMLDISTDIR/index.html"
+
+cat "$HTMLSRCDIR/tests.html" | tr '\n' ' ' | \
+perl -pe "
+  s/<\!--.*?-->//g;                          # Strip comments
+  s/\s+/ /g;                                 # Collapse white-space" > "$HTMLDISTDIR/tests.html"
 
 echo "Build complete"

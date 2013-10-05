@@ -16,10 +16,11 @@
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
 		<echo>This is a test</echo>
-		<replaceregexp file="client/src/app/run.js"
-			           match="^\s*baseUrl:\s*'/client/lib/'"
-			           replace="    baseUrl: '/client/src/'"
-			           byline="true"/>
+        <copy todir="etc/django-pkanban/pkanban">
+            <fileset dir="pkanban">
+                <exclude dir="dev" />
+            </fileset>
+        </copy>
 	</target>
 
 	<target name="init-build">
@@ -37,10 +38,10 @@
 	<target name="check-dojo-deployment">
 		<condition property="dojo.deployed">
 			<and>
-				<available file="client/src/dojo" type="dir" />
-				<available file="client/src/dojox" type="dir" />
-				<available file="client/src/dijit" type="dir" />
-				<available file="client/src/util" type="dir" />
+				<available file="pkanban/dev/static/src/dojo" type="dir" />
+				<available file="pkanban/dev/static/src/dojox" type="dir" />
+				<available file="pkanban/dev/static/src/dijit" type="dir" />
+				<available file="pkanban/dev/static/src/util" type="dir" />
 			</and>
 		</condition>
 	</target>
@@ -54,12 +55,12 @@
 		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
 		<property name="tmpdir" value="tmp" />
 		<mkdir dir="${tmpdir}" />
-		<exec executable="tar" dir="${tmpdir}" output="${build.log.dir}/deploy-dojo-tar.log">
+		<exec executable="tar" dir="${tmpdir}" ><!--output="${build.log.dir}/deploy-dojo-tar.log"-->
 			<arg value="-zxvf"/>
 			<arg value="${dojo.archive}"/>
 		</exec>
 		<basename property="dojo.revision" file="${dojo.archive}" suffix="tar.gz"/>
-		<move todir="client/src">
+		<move todir="pkanban/dev/static/src">
 			<fileset dir="${tmpdir}/${dojo.revision}" />
 		</move>
 		<delete dir="${tmpdir}"/>
@@ -111,27 +112,35 @@
 	-->
 	<target name="compile-javascript">
 		<echo>MODIFYING SOURCE: changing baseUrl in client/src/app/run.js</echo>
-		<replaceregexp file="client/src/app/run.js"
-			           match="^\s*baseUrl:\s*'/client/src/'"
-			           replace="    baseUrl: '/client/lib/'"
+		<replaceregexp file="pkanban/dev/static/src/app/run.js"
+			           match="^\s*baseUrl:\s*'\.\./dev/static/src'"
+			           replace="    baseUrl: '/static/'"
 			           byline="true"/>		
-		<exec executable="./build.sh" dir="client" />
+		<exec executable="./build.sh" dir="etc/buildtools" />
 		<echo>MODIFYING SOURCE: undoing previous baseUrl change in client/src/app/run.js</echo>
-		<replaceregexp file="client/src/app/run.js"
-			           match="^\s*baseUrl:\s*'/client/lib/'"
-			           replace="    baseUrl: '/client/src/'"
+		<replaceregexp file="pkanban/dev/static/src/app/run.js"
+			           match="^\s*baseUrl:\s*'/static/'"
+			           replace="    baseUrl: '\.\./dev/static/src'"
 			           byline="true"/>		
-		<copy file="client/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
+		<move file="pkanban/static/pkanban/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
 	</target>
 	
 	<!--
 		Create python tarball. 
 	-->
 	<target name="create-python-distribution">
-		<exec executable="python" dir=".">
+        <copy todir="etc/django-pkanban/pkanban">
+            <fileset dir="pkanban">
+                <exclude name="dev/*" />
+            </fileset>
+        </copy>
+        <copy file="README.md" tofile="etc/django-pkanban/README.rst" />
+		<exec executable="python" dir="etc/django-pkanban">
 			<arg value="setup.py" />
 			<arg value="sdist" />
 		</exec>
+        <delete file="etc/django-pkanban/README.rst" />
+        <delete dir="etc/django-pkanban/pkanban"/>
 	</target>
 	
 	<!-- 

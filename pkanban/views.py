@@ -28,10 +28,11 @@ def show_spa(request):
     show the single page application version of the ui
     """
     c = RequestContext(request)
-    if dev:
-        return render_to_response('src/index.html', c)
-    else:
-        return render_to_response('lib/index.html', c)
+    return render_to_response('index.html', c)
+#    if dev:
+#        return render_to_response('src/index.html', c)
+#    else:
+#        return render_to_response('lib/index.html', c)
 
 def setValuestream(aTask, requestData, valuestreams, log):
     sname = requestData['valuestream'].strip()
