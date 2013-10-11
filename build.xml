@@ -114,12 +114,12 @@
 		<echo>MODIFYING SOURCE: changing baseUrl in client/src/app/run.js</echo>
 		<replaceregexp file="pkanban/dev/static/src/app/run.js"
 			           match="^\s*baseUrl:\s*'\.\./dev/static/src'"
-			           replace="    baseUrl: '/static/'"
+			           replace="    baseUrl: '/static/pkanban'"
 			           byline="true"/>		
 		<exec executable="./build.sh" dir="etc/buildtools" />
 		<echo>MODIFYING SOURCE: undoing previous baseUrl change in client/src/app/run.js</echo>
 		<replaceregexp file="pkanban/dev/static/src/app/run.js"
-			           match="^\s*baseUrl:\s*'/static/'"
+			           match="^\s*baseUrl:\s*'/static/pkanban'"
 			           replace="    baseUrl: '\.\./dev/static/src'"
 			           byline="true"/>		
 		<move file="pkanban/static/pkanban/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
@@ -131,7 +131,7 @@
 	<target name="create-python-distribution">
         <copy todir="etc/django-pkanban/pkanban">
             <fileset dir="pkanban">
-                <exclude name="dev/*" />
+                <exclude name="dev/**" />
             </fileset>
         </copy>
         <copy file="README.md" tofile="etc/django-pkanban/README.rst" />

@@ -17,7 +17,7 @@ setup(
 #                              '../client/lib/dijit/layout/templates/*.html', '../client/lib/dijit/form/templates/*.html',
 #                              '../client/lib/dijit/templates/*.html',
 #                              '../client/lib/dijit/themes/claro/form/images/buttonArrows.png']},
-#    include_package_data=True,
+    include_package_data=True,
     license='BSD License',  # example license
     description='A simple Django web app for personal kanban task management',
     long_description=README,

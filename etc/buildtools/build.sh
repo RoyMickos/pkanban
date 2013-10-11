@@ -14,7 +14,7 @@ TOOLSDIR="$SRCDIR/util/buildscripts"
 
 # Destination directory for built code
 DISTDIR="$BASEDIR/pkanban/static/pkanban"
-HTMLDISTDIR="$BASEDIR/pkanban/templates/pkanban"
+HTMLDISTDIR="$BASEDIR/pkanban/templates"
 
 # Module ID of the main application package loader configuration
 LOADERMID="app/run"
@@ -36,7 +36,9 @@ echo "Building application with $PROFILE to $DISTDIR."
 
 echo -n "Cleaning old files..."
 rm -rf "$DISTDIR"
+rm -rf "$HTMLDISTDIR"
 echo " Done"
+mkdir "$HTMLDISTDIR"
 
 cd "$TOOLSDIR"
 
