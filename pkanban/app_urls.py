@@ -25,4 +25,5 @@ urlpatterns = patterns('',
     url(r'^archive/', showArchive),
     url(r'^effort/', addEffort),
     url(r'^delete/', speedyArchieve),
+    #url(r'^Tests/', run_tests),
 )

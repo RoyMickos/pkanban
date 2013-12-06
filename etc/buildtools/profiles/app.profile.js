@@ -66,7 +66,7 @@ var profile = {
 			include: [ 'dojo/i18n', 'dojo/on', 'dojo/request/xhr', 'dojo/domReady', 
 					   'dijit/ProgressBar', 'dijit/layout/BorderContainer', 'dijit/layout/ContentPane',
 					   'dijit/layout/TabContainer',
-					   'app/main', 'app/run', 'app/PkApp', 'app/PkModel', 'app/PkPomodoro'],
+					   'app/main', 'app/PkApp', 'app/PkModel', 'app/PkPomodoro'],
 			// we need to include at least en-us locale, otherwise production load will fail
 			includeLocales: ['en-us'],
 			// By default, the build system will try to include `dojo/main` in the built `dojo/dojo` layer, which adds

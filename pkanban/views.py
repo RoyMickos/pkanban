@@ -29,10 +29,13 @@ def show_spa(request):
     """
     c = RequestContext(request)
     return render_to_response('index.html', c)
-#    if dev:
-#        return render_to_response('src/index.html', c)
-#    else:
-#        return render_to_response('lib/index.html', c)
+
+#def run_tests(request):
+#    """ run_tests
+#    return qunit test page
+#    """
+#   c = RequestContext(request)
+#    return render_to_response('tests.html', c)
 
 def setValuestream(aTask, requestData, valuestreams, log):
     sname = requestData['valuestream'].strip()

@@ -7,14 +7,14 @@ BASEDIR=$(cd $(dirname $0)/../.. && pwd)
 
 # Source directory for unbuilt code
 SRCDIR="$BASEDIR/pkanban/dev/static/src"
-HTMLSRCDIR="$BASEDIR/pkanban/dev/templates"
+HTMLSRCDIR="$BASEDIR/pkanban/dev/static/src"
 
 # Directory containing dojo build utilities
 TOOLSDIR="$SRCDIR/util/buildscripts"
 
 # Destination directory for built code
 DISTDIR="$BASEDIR/pkanban/static/pkanban"
-HTMLDISTDIR="$BASEDIR/pkanban/templates"
+HTMLDISTDIR="$BASEDIR/pkanban/static/pkanban"
 
 # Module ID of the main application package loader configuration
 LOADERMID="app/run"

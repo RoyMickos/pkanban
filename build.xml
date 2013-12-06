@@ -111,19 +111,46 @@
 		We're using the build.sh from dojo boilerplate
 	-->
 	<target name="compile-javascript">
+		<!--
 		<echo>MODIFYING SOURCE: changing baseUrl in client/src/app/run.js</echo>
 		<replaceregexp file="pkanban/dev/static/src/app/run.js"
 			           match="^\s*baseUrl:\s*'\.\./dev/static/src'"
 			           replace="    baseUrl: '/static/pkanban'"
-			           byline="true"/>		
+			           byline="true"/>
+		-->		
 		<exec executable="./build.sh" dir="etc/buildtools" />
+		<!--
 		<echo>MODIFYING SOURCE: undoing previous baseUrl change in client/src/app/run.js</echo>
 		<replaceregexp file="pkanban/dev/static/src/app/run.js"
 			           match="^\s*baseUrl:\s*'/static/pkanban'"
 			           replace="    baseUrl: '\.\./dev/static/src'"
-			           byline="true"/>		
+			           byline="true"/>
+		-->		
 		<move file="pkanban/static/pkanban/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
 	</target>
+
+	<target name="run-browser-tests-compile" depends="init-build">
+		<echo>Run selenium functional tests in compiled environment</echo>
+		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
+		<parallel timeout="90000">
+			<daemons>
+				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-compile_startdjango.log">
+					<arg value="manage.py" />
+					<arg value="runserver" />
+					<arg value="4000" />
+				</exec>
+			</daemons>
+			<sequential>
+				<sleep seconds="20" />
+				<exec executable="python" dir="etc/testtools">
+					<arg value="browser_tests.py" />
+				</exec>
+				<exec executable="etc/buildtools/stopserver.sh" dir="." />
+			</sequential>
+		</parallel>
+	</target>
+	
+
 	
 	<!--
 		Create python tarball. 
@@ -146,6 +173,10 @@
 	<!-- 
 		Deploy release using chef + vagrant
 	-->
+	<target name="deploy-application">
+		<exec executable="knife" dir="etc/chef-repo">
+		</exec>
+	</target>
 	
 </project>
 

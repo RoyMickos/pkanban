@@ -7,7 +7,8 @@ from selenium.webdriver.common.by import By
 class QTestpage:
     def __init__(self, driver, url):
         self.driver = driver # web driver
-        self.driver.get("%s%s" % (url, '/client/src/tests.html'))
+        #self.driver.get("%s%s" % (url, '/static/templates/tests.html'))
+        self.driver.get("%s%s" % (url, '/dev/static/src/tests.html'))
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,"pkanban_testready")))
         
     def getTestResultSummary(self):

@@ -37,6 +37,19 @@
     <!-- Load the loader configuration script. Note that this module ID is hard-coded in build.sh in order to provide
          an optimised build that loads as few as one script for the entire application. If you change the name or
          location of this module, you will need to update build.sh too. -->
-    <script src="{{ STATIC_URL }}app/run.js"></script>
+    <!--script src="{{ STATIC_URL }}app/run.js"></script-->
+    <script>
+    	require({
+		    baseUrl: '{{ STATIC_URL }}',
+		
+			packages: [
+				'dojo',
+				'dijit',
+				'dojox',
+				{name: "jquery", location: "jquery", main: "jquery.min"},
+				{ name: 'app', location: 'app', map: {} }
+			]
+		}, [ 'app' ]);
+    </script>
 </body>
 </html>

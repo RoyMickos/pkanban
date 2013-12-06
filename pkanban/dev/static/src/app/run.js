@@ -14,7 +14,7 @@ require({
 	// problem in that production and development configurations will differ. in development we use ../dev/static/src/
 	// while in production we use /static/
 	// BUILD WILL CHANGE SOURCE
-    baseUrl: '../dev/static/src',
+    baseUrl: '/static/pkanban/',
 
 	// A list of packages to register. Strictly speaking, you do not need to register any packages,
 	// but you can't require "app" and get app/main.js if you do not register the "app" package (the loader will look
