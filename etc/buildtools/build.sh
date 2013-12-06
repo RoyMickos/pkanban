@@ -6,15 +6,15 @@ set -e
 BASEDIR=$(cd $(dirname $0)/../.. && pwd)
 
 # Source directory for unbuilt code
-SRCDIR="$BASEDIR/pkanban/dev/static/src"
-HTMLSRCDIR="$BASEDIR/pkanban/dev/static/src"
+SRCDIR="$BASEDIR/spa/src"
+HTMLSRCDIR="$BASEDIR/spa/src"
 
 # Directory containing dojo build utilities
 TOOLSDIR="$SRCDIR/util/buildscripts"
 
 # Destination directory for built code
-DISTDIR="$BASEDIR/pkanban/static/pkanban"
-HTMLDISTDIR="$BASEDIR/pkanban/static/pkanban"
+DISTDIR="$BASEDIR/spa/lib"
+HTMLDISTDIR="$BASEDIR/spa/lib"
 
 # Module ID of the main application package loader configuration
 LOADERMID="app/run"
@@ -61,7 +61,8 @@ perl -pe "
   s/<\!--.*?-->//g;                          # Strip comments
   s/isDebug: *1/deps:['$LOADERMID']/;        # Remove isDebug, add deps
   s/<script src=\"$LOADERMID.*?\/script>//;  # Remove script app/run
-  s/\s+/ /g;                                 # Collapse white-space" > "$HTMLDISTDIR/index.html"
+  s/\s+/ /g;                                 # Collapse white-space
+  s/\/src\//\/lib\//g;                       # change path refs " > "$HTMLDISTDIR/index.html"
 
 cat "$HTMLSRCDIR/tests.html" | tr '\n' ' ' | \
 perl -pe "

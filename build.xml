@@ -12,6 +12,7 @@
 	<property name="build.log.dir" value="${build.dir}/log" />
 	<property name="django.test.server" value="localhost:5001" />
 	<property name="build.tools.dir" value="etc/buildtools" />
+    <property name="static.files.dir" value="spa/src"/>
 	
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
@@ -38,10 +39,10 @@
 	<target name="check-dojo-deployment">
 		<condition property="dojo.deployed">
 			<and>
-				<available file="pkanban/dev/static/src/dojo" type="dir" />
-				<available file="pkanban/dev/static/src/dojox" type="dir" />
-				<available file="pkanban/dev/static/src/dijit" type="dir" />
-				<available file="pkanban/dev/static/src/util" type="dir" />
+				<available file="${static.files.dir}/dojo" type="dir" />
+				<available file="${static.files.dir}/dojox" type="dir" />
+				<available file="${static.files.dir}/dijit" type="dir" />
+				<available file="${static.files.dir}/util" type="dir" />
 			</and>
 		</condition>
 	</target>
@@ -60,7 +61,7 @@
 			<arg value="${dojo.archive}"/>
 		</exec>
 		<basename property="dojo.revision" file="${dojo.archive}" suffix="tar.gz"/>
-		<move todir="pkanban/dev/static/src">
+		<move todir="${static.files.dir}">
 			<fileset dir="${tmpdir}/${dojo.revision}" />
 		</move>
 		<delete dir="${tmpdir}"/>
@@ -126,7 +127,7 @@
 			           replace="    baseUrl: '\.\./dev/static/src'"
 			           byline="true"/>
 		-->		
-		<move file="pkanban/static/pkanban/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
+		<move file="spa/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
 	</target>
 
 	<target name="run-browser-tests-compile" depends="init-build">

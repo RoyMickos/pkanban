@@ -5,12 +5,12 @@
     <title>Personal Kanban</title>
     <!-- Application-specific CSS should be stored in your application’s package to ensure portability and to allow
          the build system to combine & minify it. -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}app/resources/style.css">
-    <link rel="shortcut icon" href="{{ STATIC_URL }}app/resources/favicon.ico" />
+    <link rel="stylesheet" href="/spa/src/app/resources/style.css">
+    <link rel="shortcut icon" href="/spa/src/app/resources/favicon.ico" />
 </head>
 <body class="claro">
 
-	<audio id="pomo_end"><source src="{{ STATIC_URL }}app/resources/audio/tom_jerry_msg_tone.mp3" type="audio/mpeg"></source></audio>
+	<audio id="pomo_end"><source src="/spa/src/app/resources/audio/tom_jerry_msg_tone.mp3" type="audio/mpeg"></source></audio>
 
     <!-- dojo.js is an AMD-compliant loader script. It accepts configuration either from a data-dojo-config attribute,
          as shown here, from a global dojoConfig object (which must be defined *before* dojo.js is loaded), or from
@@ -32,24 +32,11 @@
 
 		 NOTE: `build.sh` is responsible for removing the "isDebug" flag when deploying to production. If you modify
 		 this flag at all, you will break the build! -->
-    <script data-dojo-config="async: 1, tlmSiblingOfDojo: 0, isDebug: 1" src="{{ STATIC_URL }}dojo/dojo.js"></script>
+    <script data-dojo-config="async: 1, tlmSiblingOfDojo: 0, isDebug: 1" src="/spa/src/dojo/dojo.js"></script>
 
     <!-- Load the loader configuration script. Note that this module ID is hard-coded in build.sh in order to provide
          an optimised build that loads as few as one script for the entire application. If you change the name or
          location of this module, you will need to update build.sh too. -->
-    <!--script src="{{ STATIC_URL }}app/run.js"></script-->
-    <script>
-    	require({
-		    baseUrl: '{{ STATIC_URL }}',
-		
-			packages: [
-				'dojo',
-				'dijit',
-				'dojox',
-				{name: "jquery", location: "jquery", main: "jquery.min"},
-				{ name: 'app', location: 'app', map: {} }
-			]
-		}, [ 'app' ]);
-    </script>
+    <script src="/spa/src/app/run.js"></script>
 </body>
 </html>
