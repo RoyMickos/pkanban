@@ -159,7 +159,11 @@
 	<target name="create-python-distribution">
         <copy todir="etc/django-pkanban/pkanban">
             <fileset dir="pkanban">
-                <exclude name="dev/**" />
+            </fileset>
+        </copy>
+        <copy todir="etc/django-pkanban/pkanban/static/spa">
+            <fileset dir="spa">
+                <exclude name="src/**"/>
             </fileset>
         </copy>
         <copy file="README.md" tofile="etc/django-pkanban/README.rst" />
@@ -168,7 +172,7 @@
 			<arg value="sdist" />
 		</exec>
         <delete file="etc/django-pkanban/README.rst" />
-        <delete dir="etc/django-pkanban/pkanban"/>
+        <!--delete dir="etc/django-pkanban/pkanban"/-->
 	</target>
 	
 	<!-- 

@@ -1,11 +1,11 @@
-recursive-include pkanban/static/pkanban/app/resources *
+recursive-include pkanban/static/spa/lib/app/resources *
 include README.rst
-include pkanban/static/pkanban/dojo/dojo.js
-include pkanban/static/pkanban/app/run.js
-include pkanban/static/pkanban/dojo/resources/blank.gif
-include pkanban/static/pkanban/dijit/layout/templates/*.html
-include pkanban/static/pkanban/dijit/form/templates/*.html
-include pkanban/static/pkanban/dijit/templates/*.html
-include pkanban/static/pkanban/dijit/themes/claro/form/images/buttonArrows.png
-recursive-include pkanban/templates *
+include pkanban/static/spa/lib/dojo/dojo.js
+include pkanban/static/spa/lib/app/run.js
+include pkanban/static/spa/lib/dojo/resources/blank.gif
+include pkanban/static/spa/lib/dijit/layout/templates/*.html
+include pkanban/static/spa/lib/dijit/form/templates/*.html
+include pkanban/static/spa/lib/dijit/templates/*.html
+include pkanban/static/spa/lib/dijit/themes/claro/form/images/buttonArrows.png
+include pkanban/static/spa/lib/index.html
 
