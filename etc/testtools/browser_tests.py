@@ -6,7 +6,7 @@ django. intened usage:
 idea is to get rid of some issues with django runs from jenkins
 """
 
-import unittest
+import unittest, sys
 #from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -68,5 +68,10 @@ def suite():
     return mainViewSuite
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        TestMainView.live_server_url = sys.argv[1]
+    elif len(sys.argv) != 1:
+        print sys.argv[0] + " takes 0 or 1 argument(s)"
+        sys.exit(1)
     unittest.main()
     

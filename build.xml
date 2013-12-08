@@ -151,7 +151,11 @@
 		</parallel>
 	</target>
 	
-
+    <target name="qd-browser-test">
+				<exec executable="python" dir="etc/testtools">
+					<arg value="browser_tests.py" />
+				</exec>
+    </target>
 	
 	<!--
 		Create python tarball. 
