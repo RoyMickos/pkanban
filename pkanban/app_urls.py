@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
-from django.conf.urls.defaults import *
+#from django.conf.urls.defaults import *
+from django.conf.urls import *
 from models import PkTask
 from views import *
 from django.contrib import admin

@@ -8,7 +8,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='pkanban',
-    version='0.3.2',
+    version='0.3.3',
     packages=['pkanban'],
     package_dir={'pkanban': 'pkanban'},
     include_package_data=True,

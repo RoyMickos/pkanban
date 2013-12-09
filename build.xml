@@ -85,7 +85,7 @@
 		<echo>Run selenium functional tests in development environment</echo>
 		<echo>Run qunit javascript unit tests in development environment</echo>
 		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
-		<parallel timeout="90000">
+		<parallel timeout="120000">
 			<daemons>
 				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
 					<arg value="manage.py" />
@@ -176,7 +176,7 @@
 			<arg value="sdist" />
 		</exec>
         <delete file="etc/django-pkanban/README.rst" />
-        <!--delete dir="etc/django-pkanban/pkanban"/-->
+        <delete dir="etc/django-pkanban/pkanban"/>
 	</target>
 	
 	<!-- 
