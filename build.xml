@@ -119,7 +119,7 @@
 		Compile javascript
 		We're using the build.sh from dojo boilerplate
 	-->
-	<target name="compile-javascript">
+	<target name="compile-javascript" output="${build.log.dir}/compile-javascript.log">
 		<exec executable="./build.sh" dir="etc/buildtools" />
 		<move file="spa/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
 	</target>
@@ -127,7 +127,7 @@
 	<target name="run-browser-tests-compile" depends="init-build">
 		<echo>Run selenium functional tests in compiled environment</echo>
 		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
-		<parallel timeout="90000">
+		<parallel timeout="120000">
 			<daemons>
 				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-compile_startdjango.log">
 					<arg value="manage.py" />
@@ -154,7 +154,7 @@
 	<!--
 		Create python tarball. 
 	-->
-	<target name="create-python-distribution">
+	<target name="create-python-distribution" output="${build.log.dir}/create-python-distribution.log">
         <copy todir="etc/django-pkanban/pkanban">
             <fileset dir="pkanban">
             </fileset>
@@ -169,7 +169,7 @@
 			<arg value="setup.py" />
 			<arg value="sdist" />
 		</exec>
-        <move todirfile="${build.dist.dir}">
+        <move todir="${build.dist.dir}">
             <fileset dir="etc/django-pkanban/dist/">
                 <include name="*.gz"/>
             </fileset>
@@ -200,7 +200,7 @@
 			           byline="true"/>		
 	</target>
     <target name="activate-compiled-configuration">
-		<echo>MODIFYING SOURCE: switching to development configuration</echo>
+		<echo>MODIFYING SOURCE: switching to compiled configuration</echo>
 		<replaceregexp file="manage.py"
 			           match="devel_site.settings"
 			           replace="compiled_site.settings"
