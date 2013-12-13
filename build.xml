@@ -119,9 +119,11 @@
 		Compile javascript
 		We're using the build.sh from dojo boilerplate
 	-->
-	<target name="compile-javascript" output="${build.log.dir}/compile-javascript.log">
+	<target name="compile-javascript">
+        <record name="${build.log.dir}/compile-javascript.log" action="start" loglevel="verbose"/>
 		<exec executable="./build.sh" dir="etc/buildtools" />
 		<move file="spa/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
+        <record name="${build.log.dir}/compile-javascript.log" action="stop" />
 	</target>
 
 	<target name="run-browser-tests-compile" depends="init-build">
@@ -154,7 +156,7 @@
 	<!--
 		Create python tarball. 
 	-->
-	<target name="create-python-distribution" output="${build.log.dir}/create-python-distribution.log">
+	<target name="create-python-distribution"><!-- output="${build.log.dir}/create-python-distribution.log"-->
         <copy todir="etc/django-pkanban/pkanban">
             <fileset dir="pkanban">
             </fileset>
