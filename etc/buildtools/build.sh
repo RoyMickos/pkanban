@@ -6,15 +6,15 @@ set -e
 BASEDIR=$(cd $(dirname $0)/../.. && pwd)
 
 # Source directory for unbuilt code
-SRCDIR="$BASEDIR/spa/src"
-HTMLSRCDIR="$BASEDIR/spa/src"
+SRCDIR="$BASEDIR/pkanban/static/spa/src"
+HTMLSRCDIR="$BASEDIR/pkanban/static/spa/src"
 
 # Directory containing dojo build utilities
 TOOLSDIR="$SRCDIR/util/buildscripts"
 
 # Destination directory for built code
-DISTDIR="$BASEDIR/spa/lib"
-HTMLDISTDIR="$BASEDIR/spa/lib"
+DISTDIR="$BASEDIR/pkanban/static/spa/lib"
+HTMLDISTDIR="$BASEDIR/pkanban/static/spa/lib"
 
 # Module ID of the main application package loader configuration
 LOADERMID="app/run"

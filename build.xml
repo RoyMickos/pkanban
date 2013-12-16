@@ -18,11 +18,10 @@
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
 		<echo>This is a test</echo>
-        <copy todir="etc/django-pkanban/pkanban">
-            <fileset dir="pkanban">
-                <exclude dir="dev" />
-            </fileset>
-        </copy>
+		<replaceregexp file="setup.py"
+			           match="version='(.*)'"
+			           replace="version='\1${env.BUILD_NUMBER}'"
+			           byline="true"/>
 	</target>
 
     <!-- 
@@ -156,7 +155,8 @@
 	<!--
 		Create python tarball. 
 	-->
-	<target name="create-python-distribution"><!-- output="${build.log.dir}/create-python-distribution.log"-->
+	<target name="create-python-distribution">
+    <!-- output="${build.log.dir}/create-python-distribution.log"
         <copy todir="etc/django-pkanban/pkanban">
             <fileset dir="pkanban">
             </fileset>
@@ -167,20 +167,28 @@
             </fileset>
         </copy>
         <copy file="README.md" tofile="etc/django-pkanban/README.rst" />
+        -->
+        <!-- append build number to version data -->
+		<replaceregexp file="setup.py"
+			           match="version='(.*)'"
+			           replace="version='\1${env.BUILD_NUMBER}'"
+			           byline="true"/>
 		<exec executable="python" dir="etc/django-pkanban">
 			<arg value="setup.py" />
 			<arg value="sdist" />
 		</exec>
         <move todir="${build.dist.dir}">
-            <fileset dir="etc/django-pkanban/dist/">
+            <fileset dir="dist">
                 <include name="*.gz"/>
             </fileset>
-            <filelist dir="etc/django-pkanban/pkanban.egg-info">
+            <filelist dir="pkanban.egg-info">
                 <file name="SOURCES.txt"/>
             </filelist>
         </move>
+        <!--
         <delete file="etc/django-pkanban/README.rst" />
         <delete dir="etc/django-pkanban/pkanban"/>
+        -->
 	</target>
 	
 	<!-- 

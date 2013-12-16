@@ -1,24 +1,30 @@
 *~
 *.pyc
+*.pyo
 *.log
-spa/src/dgrid/
-spa/src/dijit/
-spa/src/dojo/
-spa/src/dojox/
-spa/src/put-selector/
-spa/src/util/
-spa/src/xstyle/
-spa/lib/
-pkanban/static
+# static javascript libraries and compiled files
+pkanban/static/spa/src/dgrid/
+pkanban/static/spa/src/dijit/
+pkanban/static/spa/src/dojo/
+pkanban/static/spa/src/dojox/
+pkanban/static/spa/src/put-selector/
+pkanban/static/spa/src/util/
+pkanban/static/spa/src/xstyle/
+pkanban/static/spa/lib/
 pkanban/templates
+# setuptools
 dist/
 etc/django-pkanban/dist
-etc/django-pkanban.egg-info/
+django-pkanban.egg-info/
 etc/django-pkanban/pkanban.egg-info/
+# site settings
 devel_site/
 compiled_site/
-selenium/
-conf/
 manage.py
 etc/chef-repo/.chef/
+# buildout
+bin/
+develop-eggs/
+eggs/
+parts/
 
