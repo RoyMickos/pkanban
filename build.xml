@@ -13,7 +13,7 @@
     <property name="build.dist.dir" value="${build.dir}/dist" />
 	<property name="django.test.server" value="localhost:5001" />
 	<property name="build.tools.dir" value="etc/buildtools" />
-    <property name="static.files.dir" value="spa/src"/>
+    <property name="static.files.dir" value="pkanban/static/spa/src"/>
 	
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
