@@ -173,7 +173,7 @@
 			           match="version='(.*)'"
 			           replace="version='\1${env.BUILD_NUMBER}'"
 			           byline="true"/>
-		<exec executable="python" dir="etc/django-pkanban">
+		<exec executable="python">
 			<arg value="setup.py" />
 			<arg value="sdist" />
 		</exec>
