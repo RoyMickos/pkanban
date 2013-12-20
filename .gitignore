@@ -19,7 +19,6 @@ django-pkanban.egg-info/
 etc/django-pkanban/pkanban.egg-info/
 # site settings
 devel_site/
-compiled_site/
 manage.py
 etc/chef-repo/.chef/
 # buildout

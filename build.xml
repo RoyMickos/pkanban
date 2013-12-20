@@ -121,7 +121,7 @@
 	<target name="compile-javascript">
         <record name="${build.log.dir}/compile-javascript.log" action="start" loglevel="verbose"/>
 		<exec executable="./build.sh" dir="etc/buildtools" />
-		<move file="spa/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
+		<move file="pkanban/static/spa/lib/build-report.txt" tofile="${build.dir}/javascript-compile.txt" />
         <record name="${build.log.dir}/compile-javascript.log" action="stop" />
 	</target>
 
@@ -205,15 +205,15 @@
     <target name="activate-development-configuration">
 		<echo>MODIFYING SOURCE: switching to development configuration</echo>
 		<replaceregexp file="manage.py"
-			           match="compiled_site.settings"
-			           replace="devel_site.settings"
+			           match="devel_site.lib_settings"
+			           replace="devel_site.src_settings"
 			           byline="true"/>		
 	</target>
     <target name="activate-compiled-configuration">
 		<echo>MODIFYING SOURCE: switching to compiled configuration</echo>
 		<replaceregexp file="manage.py"
-			           match="devel_site.settings"
-			           replace="compiled_site.settings"
+			           match="devel_site.src_settings"
+			           replace="devel_site.lib_settings"
 			           byline="true"/>		
 	</target>
 
