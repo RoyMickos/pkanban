@@ -259,6 +259,7 @@
         <antcall target="activate-compiled-configuration"></antcall>
         <antcall target="run-browser-tests-compile"></antcall>
         <antcall target="create-python-distribution"></antcall>
+        <antcall target="publish-release-aws"></antcall>
         <antcall target="copy-pkanban-log"></antcall>
     </target>
 
