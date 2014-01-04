@@ -23,10 +23,11 @@
                 <linecontains>
                     <contains value="version="/>
                 </linecontains>
-                <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
+                <replaceregex pattern=".*version='(.*)'.*" replace="\1" byline="true"/>
+                <striplinebreaks />
             </filterchain>
         </loadfile>
-        <echo>We are now at version: ${build.version}</echo>
+        <echo>${build.dist.dir}/pkanban-${build.version}.tar.gz</echo>
 	</target>
 
     <!-- 
@@ -174,6 +175,7 @@
                     <contains value="version="/>
                 </linecontains>
                 <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
+                <striplinebreaks />
             </filterchain>
         </loadfile>
         <echo>Building python egg version ${build.version}</echo>
