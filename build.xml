@@ -18,10 +18,15 @@
 	<!-- Helper target to play with ant behaviour -->
 	<target name="hello">
 		<echo>This is a test</echo>
-		<replaceregexp file="setup.py"
-			           match="version='(.*)'"
-			           replace="version='\1${env.BUILD_NUMBER}'"
-			           byline="true"/>
+        <loadfile srcFile="setup.py" property="build.version">
+            <filterchain>
+                <linecontains>
+                    <contains value="version="/>
+                </linecontains>
+                <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
+            </filterchain>
+        </loadfile>
+        <echo>We are now at version: ${build.version}</echo>
 	</target>
 
     <!-- 
@@ -173,6 +178,17 @@
 			           match="version='(.*)'"
 			           replace="version='\1${env.BUILD_NUMBER}'"
 			           byline="true"/>
+        <!-- now read the modified version string into a property 
+             clumsy, I know... -->
+        <loadfile srcFile="setup.py" property="build.version">
+            <filterchain>
+                <linecontains>
+                    <contains value="version="/>
+                </linecontains>
+                <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
+            </filterchain>
+        </loadfile>
+        <echo>Building python egg version ${build.version}</echo>
 		<exec executable="python">
 			<arg value="setup.py" />
 			<arg value="sdist" />
@@ -200,7 +216,9 @@
     <target name="publish-release-aws">
         <exec executable="aws">
             <arg value="s3" />
-            <arg value="ls" />
+            <arg value="cp" />
+            <arg value="${build.dist.dir}/pkanban-${build.version}.tar.gz" />
+            <arg value="s3://rmickos-pkanban-dev/" />
         </exec>
     </target>
 
