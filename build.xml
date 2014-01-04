@@ -191,6 +191,19 @@
         -->
 	</target>
 	
+    <!--
+        publish distro file to aws
+
+        depends on environment variable (build parameter) AWS_CONFIG_FILE
+        that points to the location of the aws configuration file
+    -->
+    <target name="publish-release-aws">
+        <excec executable="aws">
+            <arg value="s3" />
+            <arg value="ls" />
+        </exec>
+    </target>
+
 	<!-- 
 		Deploy release using chef + vagrant
 	-->
@@ -231,13 +244,6 @@
         <antcall target="copy-pkanban-log"></antcall>
     </target>
 
-		<!--
-		<echo>MODIFYING SOURCE: undoing previous baseUrl change in client/src/app/run.js</echo>
-		<replaceregexp file="pkanban/dev/static/src/app/run.js"
-			           match="^\s*baseUrl:\s*'/static/pkanban'"
-			           replace="    baseUrl: '\.\./dev/static/src'"
-			           byline="true"/>
-		-->		
 
 </project>
 
