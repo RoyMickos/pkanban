@@ -218,7 +218,7 @@
             <arg value="s3" />
             <arg value="cp" />
             <arg value="${build.dist.dir}/pkanban-${build.version}.tar.gz" />
-            <arg value="s3://rmickos-pkanban-dev/" />
+            <arg value="s3://${env.S3_BUCKET_NAME}/" />
         </exec>
     </target>
 
