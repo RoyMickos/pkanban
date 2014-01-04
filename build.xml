@@ -198,7 +198,7 @@
         that points to the location of the aws configuration file
     -->
     <target name="publish-release-aws">
-        <excec executable="aws">
+        <exec executable="aws">
             <arg value="s3" />
             <arg value="ls" />
         </exec>
