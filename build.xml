@@ -161,18 +161,6 @@
 		Create python tarball. 
 	-->
 	<target name="create-python-distribution">
-    <!-- output="${build.log.dir}/create-python-distribution.log"
-        <copy todir="etc/django-pkanban/pkanban">
-            <fileset dir="pkanban">
-            </fileset>
-        </copy>
-        <copy todir="etc/django-pkanban/pkanban/static/spa">
-            <fileset dir="spa">
-                <exclude name="src/**"/>
-            </fileset>
-        </copy>
-        <copy file="README.md" tofile="etc/django-pkanban/README.rst" />
-        -->
         <!-- append build number to version data -->
 		<replaceregexp file="setup.py"
 			           match="version='(.*)'"
@@ -211,9 +199,11 @@
         publish distro file to aws
 
         depends on environment variable (build parameter) AWS_CONFIG_FILE
-        that points to the location of the aws configuration file
+        that points to the location of the aws configuration file. Also,
+        this task needs the property build.version that is defined by
+        create-python-distribution, so we need to use depends instead of antcall
     -->
-    <target name="publish-release-aws">
+    <target name="publish-python-distribution" depends="create-python-distribution">
         <exec executable="aws">
             <arg value="s3" />
             <arg value="cp" />
@@ -258,8 +248,7 @@
         <antcall target="compile-javascript"></antcall>
         <antcall target="activate-compiled-configuration"></antcall>
         <antcall target="run-browser-tests-compile"></antcall>
-        <antcall target="create-python-distribution"></antcall>
-        <antcall target="publish-release-aws"></antcall>
+        <antcall target="publish-python-distribution"></antcall>
         <antcall target="copy-pkanban-log"></antcall>
     </target>
 
