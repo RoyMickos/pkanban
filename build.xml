@@ -191,10 +191,6 @@
                 <file name="SOURCES.txt"/>
             </filelist>
         </move>
-        <!--
-        <delete file="etc/django-pkanban/README.rst" />
-        <delete dir="etc/django-pkanban/pkanban"/>
-        -->
 	</target>
 	
     <!--
@@ -203,12 +199,16 @@
         depends on environment variable (build parameter) AWS_CONFIG_FILE
         that points to the location of the aws configuration file. Also,
         this task needs the property build.version that is defined by
-        create-python-distribution, so we need to use depends instead of antcall
+        create-python-distribution, so we need to use depends instead of antcall.
+        Finally, environment also contain S3_BUCKET_NAME which is specific for
+        this instance
     -->
     <target name="publish-python-distribution" depends="create-python-distribution">
         <exec executable="aws">
             <arg value="s3" />
             <arg value="cp" />
+            <arg value="--acl" />
+            <arg value="public-read" />
             <arg value="${build.dist.dir}/pkanban-${build.version}.tar.gz" />
             <arg value="s3://${env.S3_BUCKET_NAME}/" />
         </exec>
