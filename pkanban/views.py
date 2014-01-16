@@ -28,8 +28,9 @@ def show_spa(request):
     show the single page application version of the ui
     """
     c = RequestContext(request)
-    #print c['STATIC_URL']
-    return HttpResponseRedirect(c['STATIC_URL']+'index.html')
+    print request.META['HTTP_HOST']
+    print request.build_absolute_uri(c['STATIC_URL']+'index.html')
+    return HttpResponseRedirect(request.build_absolute_uri(c['STATIC_URL']+'index.html'))
     #c = RequestContext(request)
     #return render_to_response('index.html', c)
 
