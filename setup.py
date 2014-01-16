@@ -16,7 +16,7 @@ setup(
     install_requires=['MySQL-python'],
     license='BSD License',  # example license
     description='A simple Django web app for personal kanban task management',
-    long_description=README,
+    long_description='Please refer to README.md',
     url='http://rmickos.kapsi.fi/',
     author='Roy Mickos',
     author_email='roy.mickos@gmail.com',
