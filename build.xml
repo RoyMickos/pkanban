@@ -218,7 +218,7 @@
         deploy python distribution to aws
     -->
     <target name="deploy-python-distribution">
-        <exec exectutable="knife">
+        <exec executable="knife">
             <arg value="cookbook" />
             <arg value="list" />
         </exec>
