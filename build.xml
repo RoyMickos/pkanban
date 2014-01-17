@@ -1,7 +1,11 @@
 <project name="pkanban" default="hello" basedir=".">
 	<description>
-		Create a pkanban distribution package. It will be a python package, that embeds
-		built javascript files.
+		Continuous build and deployment for pkanban application. It 'builds' javascript
+        files using dojo's build system, and deployment tooling is based on chef.
+        Note that all relevant data is not part of the pkanban repository, as obviously
+        some confiential data (database passwords, aws keys etc) are not in there. Also,
+        pkanban is a django app so you need a django project to place it in. See
+        README.md for further details.
 	</description>
 	<!--
 		Common properties
@@ -15,7 +19,7 @@
 	<property name="build.tools.dir" value="etc/buildtools" />
     <property name="static.files.dir" value="pkanban/static/spa/src"/>
 	
-	<!-- Helper target to play with ant behaviour -->
+	<!-- Helper target for testing ant targets -->
 	<target name="hello">
 		<echo>This is a test</echo>
         <loadfile srcFile="setup.py" property="build.version">
@@ -69,7 +73,7 @@
 		<pathconvert targetos="unix" property="dojo.archive" refid="dojo.archive.files"/>
 		<property name="tmpdir" value="tmp" />
 		<mkdir dir="${tmpdir}" />
-		<exec executable="tar" dir="${tmpdir}" ><!--output="${build.log.dir}/deploy-dojo-tar.log"-->
+		<exec executable="tar" dir="${tmpdir}" >
 			<arg value="-zxvf"/>
 			<arg value="${dojo.archive}"/>
 		</exec>
@@ -81,9 +85,11 @@
 	</target>
 	
 	<!--
-		Targets for development environment: run django backend tests using django's framework,
-		then run selenium tests through browser. TODO: run qunit front-end unit tests. Running would
-		be easy, how about storing the test results?
+		Targets for development environment (=uncompiled javascript source): 
+        run django backend tests using django's framework, then run selenium 
+        tests through browser. 
+		Note that test environment requires a django project, which is not part of the
+        source.
 	-->
 	<target name="run-django-backend-tests-devel">
 		<echo>Run django back-end tests in development environment</echo>
@@ -97,7 +103,8 @@
 	<target name="run-browser-tests-devel" depends="init-build">
 		<echo>Run selenium functional tests in development environment</echo>
 		<echo>Run qunit javascript unit tests in development environment</echo>
-		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
+		<!-- daemons seems to leave processes hanging. 
+             using timeout to clear processes away -->
 		<parallel timeout="120000">
 			<daemons>
 				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-devel_startdjango.log">
@@ -122,7 +129,7 @@
 	
 	<!--
 		Compile javascript
-		We're using the build.sh from dojo boilerplate
+		We're using a modified version of the build.sh from dojo boilerplate
 	-->
 	<target name="compile-javascript">
         <record name="${build.log.dir}/compile-javascript.log" action="start" loglevel="verbose"/>
@@ -131,9 +138,11 @@
         <record name="${build.log.dir}/compile-javascript.log" action="stop" />
 	</target>
 
+    <!--
+        Tests for compiled configuration
+    -->
 	<target name="run-browser-tests-compile" depends="init-build">
 		<echo>Run selenium functional tests in compiled environment</echo>
-		<!-- using daemons seems to leave processes hanging. using timeout to clear processes away -->
 		<parallel timeout="120000">
 			<daemons>
 				<exec executable="python" dir="." output="${build.log.dir}/run-browser-tests-compile_startdjango.log">
@@ -151,11 +160,16 @@
 			</sequential>
 		</parallel>
 	</target>
-	
-    <target name="qd-browser-test">
-				<exec executable="python" dir="etc/testtools">
-					<arg value="browser_tests.py" />
-				</exec>
+
+    <!--
+        Tests for deployed configuration
+    -->	
+    <target name="run-browser-tests-deploy" depends="init-build">
+		<echo>Run selenium functional tests against deployed server</echo>
+		<exec executable="python" dir="etc/testtools">
+			<arg value="browser_tests.py" />
+            <arg value="${env.AWSHOST}" />
+		</exec>
     </target>
 	
 	<!--
@@ -217,23 +231,15 @@
     <!--
         deploy python distribution to aws
     -->
-    <target name="deploy-python-distribution">
-        <exec executable="knife">
-            <arg value="cookbook" />
-            <arg value="list" />
+    <target name="deploy-python-distribution" depends="publish-python-distribution">
+        <exec executable="bootstrap-aws-update.sh">
         </exec>
     </target>
 
 	<!-- 
-		Deploy release using chef + vagrant
-	-->
-	<target name="deploy-application">
-		<exec executable="knife" dir="etc/chef-repo">
-		</exec>
-	</target>
-
-	<!-- 
-		Manipulate manage.py configuration
+		Manipulate manage.py configuration. We have two different configurations:
+        'development' - uses uncompiled javascript source
+        'compiled' - uses compiled js
 	-->
     <target name="activate-development-configuration">
 		<echo>MODIFYING SOURCE: switching to development configuration</echo>
@@ -260,7 +266,8 @@
         <antcall target="compile-javascript"></antcall>
         <antcall target="activate-compiled-configuration"></antcall>
         <antcall target="run-browser-tests-compile"></antcall>
-        <antcall target="publish-python-distribution"></antcall>
+        <antcall target="deploy-python-distribution"></antcall>
+        <antcall target="run-browser-tests-deploy"></antcall>
         <antcall target="copy-pkanban-log"></antcall>
     </target>
 
