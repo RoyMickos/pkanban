@@ -29,7 +29,9 @@ class MainPage:
         self.driver = driver # web driver
         # this is a SPA application, so to verify we will need to wait until js
         # has generated the page
-        self.driver.get("%s%s" % (url, '/pkanban'))
+        pagetarget = "%s%s" % (url, '/pkanban')
+        print "Navigating to %s" % pagetarget
+        self.driver.get(pagetarget)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,"pkmessage_area")))
             
     def getMessage(self):
