@@ -194,7 +194,7 @@
 	</target>
 	
     <!--
-        publish distro file to aws
+        publish python distribution to aws
 
         depends on environment variable (build parameter) AWS_CONFIG_FILE
         that points to the location of the aws configuration file. Also,
@@ -211,6 +211,16 @@
             <arg value="public-read" />
             <arg value="${build.dist.dir}/pkanban-${build.version}.tar.gz" />
             <arg value="s3://${env.S3_BUCKET_NAME}/" />
+        </exec>
+    </target>
+
+    <!--
+        deploy python distribution to aws
+    -->
+    <target name="deploy-python-distribution">
+        <exec exectutable="knife">
+            <arg value="cookbook" />
+            <arg value="list" />
         </exec>
     </target>
 
