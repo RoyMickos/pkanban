@@ -12,9 +12,10 @@ define([
     "dijit/layout/TabContainer",
     "./PkPomodoro",
     "./PkModel",
+    "./PkVersion",
     "jquery",
     "dojo/domReady!"
-], function(BorderContainer, ContentPane, TabContainer, PkPomodoro, PkModel,$){
+], function(BorderContainer, ContentPane, TabContainer, PkPomodoro, PkModel, PkVersion, $){
 	return function() {
 		this.taskId = 0;
 
@@ -52,7 +53,7 @@ define([
 			
 			this.widgets.left = new ContentPane({
 				region: "left",
-				content: "left",
+				// content: "left",
 				style: "width: 100px;"
 			});
 			this.widgets.pomodoro = new PkPomodoro({
@@ -69,27 +70,10 @@ define([
 				style: "width: 600px;"
 			});
 			this.widgets.main.addChild(this.widgets.center);
-			
-			/*
-						this.pktabone = new ContentPane({
-						title: "tabu 1",
-						content: "tab 1"
-					});
-					this.pktabtwo = new ContentPane({
-						title:   "tabu 2",
-						content: "tab 2"
-					});
-			
-			this.widgets.right = new ContentPane({
-				region: "right",
-				style: "width: 0px;"
-			});
-			this.widgets.main.addChild(this.widgets.right);
-			*/
 					
 			this.widgets.bottom = new ContentPane({
 				region: "bottom",
-				content: "",
+				content: PkVersion,
 				id: 'pkmessage_area'
 			});
 			this.widgets.main.addChild(this.widgets.bottom);

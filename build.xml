@@ -83,6 +83,38 @@
 		</move>
 		<delete dir="${tmpdir}"/>
 	</target>
+
+    <!--
+        determine build version string for this build using major and minor
+        from setup.py and append build number and stamp javascript sources
+        with version information so that it becomes visible in ui
+    -->
+    <target name="determine-build-version">
+         <!-- append build number to version data -->
+		<replaceregexp file="setup.py"
+			           match="version='(.*)'"
+			           replace="version='\1${env.BUILD_NUMBER}'"
+			           byline="true"/>
+        <!-- now read the modified version string into a property 
+             clumsy, I know... -->
+        <loadfile srcFile="setup.py" property="build.version">
+            <filterchain>
+                <linecontains>
+                    <contains value="version="/>
+                </linecontains>
+                <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
+                <striplinebreaks />
+            </filterchain>
+        </loadfile>
+        <echo>Building version ${build.version}</echo>       
+    </target>
+    <target name="stamp-version-to-javascript" depends="determine-build-version">
+		<replaceregexp file="pkanban/static/spa/src/app/PkVersion.js"
+			           match="return 'dev'"
+			           replace="return '${build.version}'"
+			           byline="true"/>
+        
+    </target>
 	
 	<!--
 		Targets for development environment (=uncompiled javascript source): 
@@ -175,23 +207,7 @@
 	<!--
 		Create python tarball. 
 	-->
-	<target name="create-python-distribution">
-        <!-- append build number to version data -->
-		<replaceregexp file="setup.py"
-			           match="version='(.*)'"
-			           replace="version='\1${env.BUILD_NUMBER}'"
-			           byline="true"/>
-        <!-- now read the modified version string into a property 
-             clumsy, I know... -->
-        <loadfile srcFile="setup.py" property="build.version">
-            <filterchain>
-                <linecontains>
-                    <contains value="version="/>
-                </linecontains>
-                <replaceregex pattern=".*version='(.*)'.*" replace="\1"/>
-                <striplinebreaks />
-            </filterchain>
-        </loadfile>
+	<target name="create-python-distribution" depends="determine-build-version">
         <echo>Building python egg version ${build.version}</echo>
 		<exec executable="python">
 			<arg value="setup.py" />
@@ -259,7 +275,7 @@
     <!--
         Compound targets for build and deployment automation
     -->
-    <target name="build-test" depends="init-build,deploy-dojo">
+    <target name="build-test" depends="init-build,deploy-dojo,determine-build-version">
         <antcall target="activate-development-configuration"></antcall>
         <antcall target="run-django-backend-tests-devel"></antcall>
         <antcall target="run-browser-tests-devel"></antcall>
