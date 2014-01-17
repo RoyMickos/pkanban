@@ -168,7 +168,7 @@
 		<echo>Run selenium functional tests against deployed server</echo>
 		<exec executable="python" dir="etc/testtools">
 			<arg value="browser_tests.py" />
-            <arg value="${env.AWSHOST}" />
+            <arg value="http://${env.AWSHOST}" />
 		</exec>
     </target>
 	
