@@ -70,6 +70,7 @@ def suite():
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         TestMainView.live_server_url = sys.argv[1]
+        del sys.argv[1]     #drop this argument before unittest.main processes argv
     elif len(sys.argv) != 1:
         print sys.argv[0] + " takes 0 or 1 argument(s)"
         sys.exit(1)
