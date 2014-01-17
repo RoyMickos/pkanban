@@ -232,7 +232,7 @@
         deploy python distribution to aws
     -->
     <target name="deploy-python-distribution" depends="publish-python-distribution">
-        <exec executable="bootstrap-aws-update.sh">
+        <exec executable="./bootstrap-aws-update.sh" dir=".">
         </exec>
     </target>
 
