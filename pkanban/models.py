@@ -145,7 +145,10 @@ class PkTask(models.Model):
     
     def log(self, event):
         if not self.isDone():
-            self.history += (str(datetime.datetime.now()) + ' ' + event + '\n')
+            #self.history += (str(datetime.datetime.now()) + ' ' + event + '\n')
+            logR = PkLog(task=self.id,  time=datetime.datetime.now(),
+            								 event = event)
+            logR.save()
     
     def initialize(self):
         self.effort = 0
@@ -165,6 +168,13 @@ class PkTask(models.Model):
     def hourlyEffort(self):
         return '{0:d}:{1:0>2d}'.format(self.effort / 60, self.effort % 60)
 
+class PkLog(models.Model):
+		task = models.ForeignKey(PkTask)
+		time = models.DateTimeField()
+		event = models.CharField(max_length=255)
+	
+		def __unicode__(self):
+			return u'%d %s %s' % (self.task, str(self.time), self.event)
 
 class PkTaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'lastmodify', 'completed', 'effort']
