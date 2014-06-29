@@ -3,17 +3,27 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+import re, datetime
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Don't use "from appname.models import ModelName". 
+        # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
+        datematch = re.compile(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d.\d\d\d\d\d\d')
+        for task in orm.PkTask.objects.all():
+          h = task.history
+          for entry in h.split('\n'):
+            dm = datematch.match(entry)
+            if dm is not None:
+              l = orm.PkLog(task=task,
+                time=datetime.datetime.strptime(dm.group(), '%Y-%m-%d %H:%M:%S.%f'),
+                event=entry[dm.end()+1:])
+              l.save()
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        pass
 
     models = {
         u'pkanban.pklog': {

@@ -9,13 +9,13 @@ class PkWorkPhases(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     capacity = models.PositiveSmallIntegerField()
     description = models.TextField()
-    
+
     def __unicode__(self):
         return u"%s : %d" % (self.name, self.capacity)
-    
+
     def hasFreeCapacity(self):
         return ((len(PkWipTasks.objects.filter(phase = self)) < self.capacity) or (self.capacity == 0))
-    
+
     def addTask(self, task, forced = False):
         alreadyInWip = (len(PkWipTasks.objects.filter(task=task)) > 0)
         if (not alreadyInWip and (self.hasFreeCapacity() or forced)):
@@ -28,7 +28,7 @@ class PkWorkPhases(models.Model):
                                                                                                                            str(alreadyInWip),
                                                                                                                            str(forced)))
             return False
-    
+
 admin.site.register(PkWorkPhases)
 
 # valuestreams
@@ -49,7 +49,7 @@ class PkValuestream(models.Model):
     streamname = models.CharField(max_length=50, primary_key=True)
     phases = models.ManyToManyField(PkWorkPhases)
     #tasks = models.TextField()
-    
+
     def __unicode__(self):
         return unicode(self.streamname)
 
@@ -59,7 +59,7 @@ class PkValuestream(models.Model):
         else:
             log = logging.getLogger('pkanban.application')
             log.error('PkValuestream: could not add phase \"%s\" because it is already in %s' % ','.join(self.phases.all()))
-    
+
     def getStreamStatus(self, aTask):
         """getStreamStatus - find where a task is in the stream and where it is heading
         Determines where a task is currently in the stream, and what is the capacity situation in the
@@ -102,7 +102,7 @@ class PkValuestream(models.Model):
             raise TaskAlreadyCompleted(aTask.name)
         else:
             status = self.getStreamStatus(aTask)
-        
+
         if status['nextPhase'] == 'completed':
             status['wipRecord'].delete()
             aTask.complete()
@@ -136,25 +136,25 @@ class PkTask(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("task_view", [str(self.id)])
-    
+
     def __unicode__(self):
         return u'%s' % self.name
-    
+
     def isDone(self):
         return self.completed is not None
-    
+
     def log(self, event):
         if not self.isDone():
             #self.history += (str(datetime.datetime.now()) + ' ' + event + '\n')
             logR = PkLog(task=self.id,  time=datetime.datetime.now(),
             								 event = event)
             logR.save()
-    
+
     def initialize(self):
         self.effort = 0
         self.valuestream = None
         self.log("Task Created")
-        
+
     def update(self, fieldDict):
         for key in ['name', 'description']:
             if key in fieldDict:
@@ -169,26 +169,25 @@ class PkTask(models.Model):
         return '{0:d}:{1:0>2d}'.format(self.effort / 60, self.effort % 60)
 
 class PkLog(models.Model):
-		task = models.ForeignKey(PkTask)
+		task = models.ForeignKey(PkTask, related_name='logs')
 		time = models.DateTimeField()
 		event = models.CharField(max_length=255)
-	
+
 		def __unicode__(self):
-			return u'%d %s %s' % (self.task, str(self.time), self.event)
+			return u'%d %s %s' % (self.task.pk, str(self.time), self.event)
 
 class PkTaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'lastmodify', 'completed', 'effort']
-    
+
 admin.site.register(PkTask, PkTaskAdmin)
 
 #tasks in work-in-progress state
 class PkWipTasks(models.Model):
     phase = models.ForeignKey(PkWorkPhases)
     task = models.ForeignKey(PkTask)
-    
+
     def __unicode__(self):
         return u'%s : %d' % (self.phase.name, self.task.id)
-    
-    
-admin.site.register(PkWipTasks)
 
+
+admin.site.register(PkWipTasks)

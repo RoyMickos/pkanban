@@ -1,4 +1,4 @@
-# Create your views here.
+# createte your views here.
 from models import PkTask, PkWipTasks, PkValuestream, PkWorkPhases
 from models import WipLimitReached, TaskAlreadyCompleted, TaskNotInThisStream
 import logging, json
@@ -10,8 +10,24 @@ from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+
+# rest framework
+from django.http import Http404
+from django.contrib.auth.models import User
+#from rest_framework import status, generics
+#from rest_framework.reverse import reverse
+#from rest_framework.decorators import api_view
+#from rest_framework import renderers
+#from rest_framework.response import Response
+from rest_framework import viewsets
+from pkanban.serializers import TaskSerializer, UserSerializer
 
 dev = False
+
+@login_required(login_url='/login/')
+def load_app(request):
+  return HttpResponse("Logged in user: %s" % request.user)
 
 @csrf_protect
 def show_board(request):
@@ -113,7 +129,7 @@ def advanceTask(request):
     else:
         responseData = {'status': 'OK'}
     return HttpResponse(json.dumps(responseData), content_type='application/json')
-    
+
 def getDescription(request, object_id):
     """getDescription - returns description text for task <object_id>
     Description can be written as html, so it can be queried as ajax as well. This is
@@ -134,7 +150,7 @@ def addTask(request):
         newTask = PkTask(**requestData)
         newTask.initialize()
         newTask.save()
-        return HttpResponse(json.dumps({'status': 'OK', 'url': '/pkanban/Task/NewTask/'}), 
+        return HttpResponse(json.dumps({'status': 'OK', 'url': '/pkanban/Task/NewTask/'}),
                             content_type='application/json')
     else:
         responseData = {'name': '', 'description': ''}
@@ -237,3 +253,12 @@ def speedyArchieve(request):
     aTask.complete()
     aTask.save()
     return HttpResponse(json.dumps({'status': 'OK', 'url': '/pkanban/'}), content_type='application/json')
+
+# rest framework on class-based views
+class TaskViewSet(viewsets.ModelViewSet):
+  queryset = PkTask.objects.all()
+  serializer_class = TaskSerializer
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+  queryset = User.objects.all()
+  serializer_class = UserSerializer

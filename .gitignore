@@ -18,9 +18,12 @@ etc/django-pkanban/dist
 pkanban.egg-info/
 etc/django-pkanban/pkanban.egg-info/
 # site settings
+project/
 devel_site/
 manage.py
 etc/chef-repo/.chef/
+# virtualenv
+venv/
 # buildout
 bin/
 develop-eggs/
