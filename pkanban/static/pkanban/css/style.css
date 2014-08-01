@@ -1,7 +1,7 @@
-/* include other resouces */
+/* include other resouces
 @import "../../dojo/resources/dojo.css";
 @import "../../dijit/themes/claro/claro.css";
-
+*/
 body {
 	font-family:"Verdana", Geneva, sans-serif;
 	font-size:14px;
@@ -57,7 +57,7 @@ tr.fixed_phase {
 	color:#333366;
 }
 .pkanbanIconProceed {
-	background-image: url('/static/images/arrow.png'); 
+	background-image: url('/static/images/arrow.png');
 	background-repeat: no-repeat;
 	width: 16px;
 	height: 16px;
@@ -77,4 +77,3 @@ tr.fixed_phase {
 	rows:4;
 	cols:30;
 }
-

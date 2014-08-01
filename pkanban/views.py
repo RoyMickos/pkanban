@@ -30,9 +30,11 @@ from pkanban.serializers import WipSerializer, ValueStreamSerializer, ValueStrea
 dev = False
 LOG = logging.getLogger(__name__)
 
-@login_required(login_url='/login/')
+@login_required(login_url='/pkanban/login/')
 def load_app(request):
-  return HttpResponse("Logged in user: %s" % request.user)
+  c = RequestContext(request)
+  c.update(csrf(request))
+  return render_to_response('pkanban/pkanban_index.html', c)
 
 @csrf_protect
 def show_board(request):
@@ -45,7 +47,7 @@ def show_board(request):
     return render_to_response('pkanban.html', c)
 
 def show_spa(request):
-    """ show_spa
+    """
     show the single page application version of the ui
     """
     c = RequestContext(request)
@@ -54,6 +56,11 @@ def show_spa(request):
     return HttpResponseRedirect(request.build_absolute_uri(c['STATIC_URL']+'index.html'))
     #c = RequestContext(request)
     #return render_to_response('index.html', c)
+
+def show_app(request):
+  c = RequestContext(request)
+  c.update(csrf(request))
+  return render_to_response('pkanban/pkanban_index.html', c)
 
 #def run_tests(request):
 #    """ run_tests
