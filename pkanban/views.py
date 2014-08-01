@@ -11,19 +11,24 @@ from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # rest framework
 from django.http import Http404
 from django.contrib.auth.models import User
-#from rest_framework import status, generics
+from rest_framework import status
 #from rest_framework.reverse import reverse
 #from rest_framework.decorators import api_view
 #from rest_framework import renderers
-#from rest_framework.response import Response
+from rest_framework.response import Response
 from rest_framework import viewsets
-from pkanban.serializers import TaskSerializer, UserSerializer
+from rest_framework.decorators import action, link
+from pkanban.serializers import TaskSerializer, UserSerializer, PhaseSerializer
+from pkanban.serializers import PaginatedTaskSerializer
+from pkanban.serializers import WipSerializer, ValueStreamSerializer, ValueStreamIdentitySerializer
 
 dev = False
+LOG = logging.getLogger(__name__)
 
 @login_required(login_url='/login/')
 def load_app(request):
@@ -259,6 +264,149 @@ class TaskViewSet(viewsets.ModelViewSet):
   queryset = PkTask.objects.all()
   serializer_class = TaskSerializer
 
+  def list(self, request):
+    view = request.QUERY_PARAMS.get('filter')
+    page = request.QUERY_PARAMS.get('page')
+    if view == 'backlog':
+      qs = PkTask.objects.filter(completed__exact=None, valuestream__exact=None)
+    elif view == 'archive':
+      qs = PkTask.objects.exclude(completed__exact=None).order_by('-completed')
+    else:
+      qs = PkTask.objects.all()
+    paginator = Paginator(qs, 10)
+    try:
+      tasks = paginator.page(page)
+    except PageNotAnInteger:
+      tasks = paginator.page(1)
+    except EmptyPage:
+      tasks = paginator.page(paginator.num_pages)
+    serializer = PaginatedTaskSerializer(tasks, {'request': request})
+    return Response(data = serializer.data, status=status.HTTP_200_OK)
+
+  def destroy(self, request, pk=None):
+    task = self.get_object()
+    # check if task is in WIP
+    if PkWipTasks.objects.filter(task=task).exists():
+      PkWipTasks.objects.filter(task=task).delete()
+    task.valuestream = None
+    task.complete()
+    task.save()
+    return Response("OK", status=status.HTTP_200_OK)
+
+  @action()
+  def set_valuestream(self, request, pk=None):
+    task = self.get_object()
+    streamname = request.DATA.get('valuestream')
+    if streamname is None:
+      return Response("Valuestream not specified", status=status.HTTP_400_BAD_REQUEST)
+    valuestream = PkValuestream.objects.get(streamname=request.DATA.get('valuestream'))
+    if valuestream is not None:
+      try:
+          valuestream.nextPhase(task)
+      except WipLimitReached:
+          return Response("Work-in-progress limit for \"%s\" has been reached" % valuestream.streamname,
+            status=status.HTTP_400_BAD_REQUEST)
+      except TaskAlreadyCompleted:
+          return Response("Corrupted data: task \"%s\" has already been completed." % task.name,
+            status=status.HTTP_400_BAD_REQUEST)
+      except TaskNotInThisStream:
+          return Response("Internal error: task \"%s\" not in stream \"%s\" " % (task.name, valuestream.streamname),
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      else:
+          return Response("ok", status=status.HTTP_200_OK)
+    else:
+      return Response("Valuestream not found", status=status.HTTP_400_BAD_REQUEST)
+
+  @link()
+  def advance_task(self, request, pk=None):
+      aTask = self.get_object()
+      forced = request.QUERY_PARAMS.get('forced')
+      try:
+          aTask.valuestream.nextPhase(aTask, forced)
+      except WipLimitReached:
+          return Response('Error: next phase has no capacity', status=status.HTTP_400_BAD_REQUEST)
+      except TaskAlreadyCompleted:
+          return Response('Error: task has been completed already', status=status.HTTP_400_BAD_REQUEST)
+      except TaskNotInThisStream:
+          return Response('Internal Error: wrong Valuestream', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      else:
+          return Response("ok", status=status.HTTP_200_OK)
+
+  @action()
+  def add_effort(self, request, pk=None):
+    task = self.get_object()
+    minutes = request.DATA.get('minutes')
+    try:
+      minutes = int(minutes)
+    except ValueError:
+      return Response("Invalid value for parameter 'minutes'", status=status.HTTP_400_BAD_REQUEST)
+    except TypeError:
+      return Response("Missing parameter 'minutes'", status=status.HTTP_400_BAD_REQUEST)
+    if task.effort is None:
+      task.effort = minutes
+    else:
+      task.effort += minutes
+    task.log("Effort completed: %s" % minutes)
+    task.save()
+    return Response("Total effort %d minutes" % task.effort, status=status.HTTP_200_OK)
+
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
   queryset = User.objects.all()
   serializer_class = UserSerializer
+
+class PhaseViewSet(viewsets.ModelViewSet):
+  queryset = PkWorkPhases.objects.all()
+  serializer_class = PhaseSerializer
+
+class WipViewSet(viewsets.ReadOnlyModelViewSet):
+  queryset = PkWipTasks.objects.all()
+  serializer_class = WipSerializer
+
+class ValueStreamViewSet(viewsets.ModelViewSet):
+  queryset = PkValuestream.objects.all()
+  serializer_class = ValueStreamSerializer
+
+  def list(self, request):
+    resp = super(ValueStreamViewSet, self).list(request)
+    for stream in resp.data:
+      stream['phases'].insert(0, PkValuestream.BACKLOG)
+      stream['phases'].append(PkValuestream.DONE)
+    #print resp.data
+    return resp
+
+  def create(self, request):
+    phases = request.DATA.get('phases')
+    streamname = request.DATA.get('streamname')
+    print phases
+    if phases is None or streamname is None:
+      return Response("No phases or streamname defined", status=status.HTTP_400_BAD_REQUEST)
+    phase_list = list()
+    for phase in phases:
+      phase_list.append(PkWorkphases.objects.get(name=phase))
+    stream = PkValuestream.objects.create(streamname=streamname)
+    for phase in phase_list:
+      stream.addPhase(phase)
+    return Response("OK", status=status.HTTP_200_OK)
+
+"""
+def newStream(request):
+    # handle ajax request to create new valuestream
+    try:
+        receivedData = pkutil.parseRequest(request)
+        # we can't create a many-to-many relationship before the new valuestream has an id
+        # so we're fetching phases from database first, so that if any errors occur they
+        # will create an exception before we add the new stream to database
+        phases = list()
+        for aPhaseName in receivedData['phases'].split(','):
+            if aPhaseName.strip() != '':
+                phases.append(PkWorkPhases.objects.get(name = aPhaseName))
+        newVStream = PkValuestream.objects.create(streamname = receivedData['name'])
+        for aPhase in phases:
+            newVStream.addPhase(aPhase)
+    except Exception as e:
+        aResponse = {'status': 'Error', 'data': str(e)}
+        print e
+    else:
+        aResponse = {'status': 'OK', 'data': receivedData['name']}
+    return HttpResponse(json.dumps(aResponse), content_type='application/json')
+"""

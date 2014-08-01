@@ -49,6 +49,8 @@ class PkValuestream(models.Model):
     streamname = models.CharField(max_length=50, primary_key=True)
     phases = models.ManyToManyField(PkWorkPhases)
     #tasks = models.TextField()
+    BACKLOG = 'backlog'
+    DONE = 'done'
 
     def __unicode__(self):
         return unicode(self.streamname)
@@ -146,7 +148,7 @@ class PkTask(models.Model):
     def log(self, event):
         if not self.isDone():
             #self.history += (str(datetime.datetime.now()) + ' ' + event + '\n')
-            logR = PkLog(task=self.id,  time=datetime.datetime.now(),
+            logR = PkLog(task=self,  time=datetime.datetime.now(),
             								 event = event)
             logR.save()
 
