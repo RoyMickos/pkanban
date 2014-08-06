@@ -26,19 +26,43 @@ var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "pkanban.api"]);
 
 pkanbanApp.controller('wipController', ['$scope', '$sce', 'Wip', 'Valuestream',
    function($scope, $sce, Wip, Valuestream) {
-     $scope.wip = Wip.query();
-     $scope.valuestreams = Valuestream.query();
-     $scope.getPhases = function(stream) {
-       var retval, streams = $scope.valuestreams.length;
+     $scope.datamodel = {
+       wip: Wip.query(),
+       valuestreams: Valuestream.query()
+     }
+     $scope.getStream = function(streamname) {
+       var retval, streams = $scope.datamodel.valuestreams.length;
        for (i=0; i < streams; i++){
-         if ($scope.valuestreams[i].streamname === stream) {
-             retval = $scope.valuestreams[i].phases;
+         if ($scope.datamodel.valuestreams[i].streamname === streamname) {
+             retval = $scope.datamodel.valuestreams[i];
              break;
            }
          }
        return(retval);
      };
 }]);
+
+pkanbanApp.directive('pkTaskStreamBanner', ['Valuestream', function(Valuestream) {
+  return {
+    restrict: 'E',
+    scope: {
+      valuestream: '=',
+      taskphase: '=',
+    },
+    templateUrl: '/static/pkanban/templates/task-stream-banner.html'
+  };
+}]);
+
+pkanbanApp.directive('pkTask', function(Valuestream) {
+  return {
+    restrict: 'E',
+    scope: {
+      task: '=',
+      mode: '=',
+    },
+    templateUrl: '/static/pkanban/templates/task-view.html'
+  };
+});
 
 pkanbanApp.controller('taskController', ['$scope', 'Task', function($scope, Task) {
   $scope.tasks = Task.query();
