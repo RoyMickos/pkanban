@@ -10,7 +10,8 @@ pkanbanApi.factory('Wip', ['$resource', function($resource) {
 pkanbanApi.factory('Task', ['$resource', function($resource){
   return $resource('/pk/task/:id', {}, {
     query: {method: 'GET', params: {}, isArray:false},
-    get: {method: 'GET', params: {id: '@id'}}
+    //get: {method: 'GET', params: {id: '@id'}},
+    add_effort: {method: 'POST', params: {id: '@id'}}
   });
 }]);
 
@@ -25,35 +26,6 @@ pkanbanApi.factory('Valuestream', ['$resource', function($resource) {
 var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "pkanban.api"]);
 
 
-pkanbanApp.controller('wipController', ['$scope', '$sce', 'Wip', 'Valuestream',
-   function($scope, $sce, Wip, Valuestream) {
-     $scope.datamodel = {
-       wip: Wip.query(),
-       valuestreams: Valuestream.query()
-     }
-     $scope.getStream = function(streamname) {
-       var retval, streams = $scope.datamodel.valuestreams.length;
-       for (i=0; i < streams; i++){
-         if ($scope.datamodel.valuestreams[i].streamname === streamname) {
-             retval = $scope.datamodel.valuestreams[i];
-             break;
-           }
-         }
-       return(retval);
-     };
-}]);
-
-pkanbanApp.directive('pkTaskStreamBanner', ['Valuestream', function(Valuestream) {
-  return {
-    restrict: 'E',
-    scope: {
-      valuestream: '=',
-      taskphase: '=',
-    },
-    templateUrl: '/static/pkanban/templates/task-stream-banner.html'
-  };
-}]);
-
 pkanbanApp.directive('pkTaskView', function(Valuestream) {
   return {
     restrict: 'E',
@@ -65,7 +37,7 @@ pkanbanApp.directive('pkTaskView', function(Valuestream) {
   };
 });
 
-pkanbanApp.directive('pkTaskEdit', function(Valuestream) {
+pkanbanApp.directive('pkTaskEdit', function() {
   return {
     restrict: 'E',
     scope: {
@@ -81,7 +53,7 @@ pkanbanApp.directive('ckEditor', function() {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ngModel) {
-      var ck = CKEDITOR.replace(elm[0]);
+      var ck = CKEDITOR.inline(elm[0]);
 
       if (!ngModel) return;
 
@@ -99,6 +71,48 @@ pkanbanApp.directive('ckEditor', function() {
   };
 });
 
+
+pkanbanApp.directive('pkMainView', function() {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {},
+    controller: function($scope) {
+      var panes = $scope.panes = [];
+
+      $scope.select = function(pane) {
+        angular.forEach(panes, function(pane) {
+          pane.selected = false;
+        });
+        pane.selected = true;
+      };
+
+      this.addPane = function(pane) {
+        if (panes.length === 0) {
+          $scope.select(pane);
+        }
+        panes.push(pane);
+      };
+
+    },
+    templateUrl: '/static/pkanban/templates/main-view.html'
+  };
+});
+
+pkanbanApp.directive('pkTab', function(){
+  return {
+    require: '^pkMainView',
+    restrict: 'E',
+    transclude: true,
+    scope: {
+      title: '@'
+    },
+    link: function(scope, element, attrs, mainViewCtrl) {
+      mainViewCtrl.addPane(scope);
+    },
+    templateUrl: '/static/pkanban/templates/tab-pane.html'
+  };
+});
 
 pkanbanApp.controller('taskController', ['$scope', 'Task', function($scope, Task) {
   $scope.tasks = Task.query();
