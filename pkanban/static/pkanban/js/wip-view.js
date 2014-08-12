@@ -24,6 +24,27 @@ pkanbanApp.controller('wipController', ['$scope', '$sce', 'Wip', 'Valuestream',
 
 }]);
 
+pkanbanApp.directive('pkTaskSelector', function() {
+  function link(scope, element, attrs) {
+    element.on('click', function(e) {
+      e.preventDefault();
+
+      scope.$apply(function() {
+        scope.set_current_task({task: scope.task});
+      });
+    });
+  };
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      task: '=',
+      set_current_task: '&onClick'
+    }
+  }
+});
+
 pkanbanApp.directive('pkTaskStreamBanner', ['Valuestream', function(Valuestream) {
   return {
     restrict: 'E',

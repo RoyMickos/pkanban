@@ -38,6 +38,16 @@ pkanbanApp.directive('pkTaskView', function(Valuestream) {
 });
 
 pkanbanApp.directive('pkTaskEdit', function() {
+
+  // in case task get changed, update content to reflect it
+  function link(scope, element, attrs){
+    console.log(attrs);
+    scope.$watch(attrs.task, function(value) {
+      console.log('task was changed: ' + value);
+      scope.task = value;
+    })
+  }
+
   return {
     restrict: 'E',
     scope: {
@@ -57,15 +67,19 @@ pkanbanApp.directive('ckEditor', function() {
 
       if (!ngModel) return;
 
-      // pasteState
-      ck.on('change', function() {
+      var updateModel = function() {
         scope.$apply(function() {
           ngModel.$setViewValue(ck.getData());
         });
-      });
+      };
+
+      /* pasteState*/
+      ck.on('change', updateModel);
 
       ngModel.$render = function(value) {
+        ck.removeListener('change', updateModel);
         ck.setData(ngModel.$viewValue);
+        ck.on('change', updateModel);
       };
     }
   };
