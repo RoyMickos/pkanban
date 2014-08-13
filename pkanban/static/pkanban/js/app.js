@@ -1,32 +1,39 @@
+// ngResource
+//var pkanbanApi = angular.module('pkanban.api',["restangular","ngSanitize"]);
 
-var pkanbanApi = angular.module('pkanban.api',["ngResource","ngSanitize"]);
+/*
+pkanbanApi.config(['$resourceProvider', function($resourceProvider) {
+  $resourceProvider.defaults.stripTrailingSlashes = false;
+}]);
+*/
 
+/*
 pkanbanApi.factory('Wip', ['$resource', function($resource) {
   return $resource('/pk/wip', {}, {
     query: {method: 'GET', params: {}, isArray:true}
-  });
+  }, {stripTrailingSlashes: false});
 }]);
 
 pkanbanApi.factory('Task', ['$resource', function($resource){
-  return $resource('/pk/task/:id', {}, {
+  return $resource('/pk/task/:id/:action/', {}, {
     query: {method: 'GET', params: {}, isArray:false},
-    //get: {method: 'GET', params: {id: '@id'}},
-    add_effort: {method: 'POST', params: {id: '@id'}}
-  });
+    get: {method: 'GET', params: {id: '@id'}},
+    add_effort: {method: 'POST', params: {id: '@id', action: 'add_effort'}}
+  }, {stripTrailingSlashes: false});
 }]);
 
 pkanbanApi.factory('Valuestream', ['$resource', function($resource) {
   return $resource('/pk/valuestream/:streamname', {}, {
     query: {method: 'GET', params: {}, isArray:true},
     set: {method: 'GET', params: {streamname: '@streamname'}}
-  });
+  }, {stripTrailingSlashes: false});
 }]);
+*/
+
+var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "restangular"]);
 
 
-var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "pkanban.api"]);
-
-
-pkanbanApp.directive('pkTaskView', function(Valuestream) {
+pkanbanApp.directive('pkTaskView', function() {
   return {
     restrict: 'E',
     scope: {
@@ -77,6 +84,9 @@ pkanbanApp.directive('ckEditor', function() {
       ck.on('change', updateModel);
 
       ngModel.$render = function(value) {
+        // we use $apply() to update the content of ckeditor. but we need to
+        // detach the updateModel function while doing so, since it would create
+        // a nested call to $apply
         ck.removeListener('change', updateModel);
         ck.setData(ngModel.$viewValue);
         ck.on('change', updateModel);
@@ -128,6 +138,12 @@ pkanbanApp.directive('pkTab', function(){
   };
 });
 
-pkanbanApp.controller('taskController', ['$scope', 'Task', function($scope, Task) {
-  $scope.tasks = Task.query();
+pkanbanApp.controller('taskController', ['$scope', 'Restangular', function($scope, Restangular) {
+  var pkApi = Restangular.all('pk/');
+  pkApi.all('task/').getList().then(function(tasks){
+    $scope.tasks = tasks;
+  }, function errorCallback() {
+    console.log('Error while retrieving /pk/task list');
+  });
+  //$scope.tasks = Task.query();
 }]);

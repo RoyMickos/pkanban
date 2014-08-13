@@ -273,21 +273,21 @@ class TaskViewSet(viewsets.ModelViewSet):
 
   def list(self, request):
     view = request.QUERY_PARAMS.get('filter')
-    page = request.QUERY_PARAMS.get('page')
+    #page = request.QUERY_PARAMS.get('page')
     if view == 'backlog':
       qs = PkTask.objects.filter(completed__exact=None, valuestream__exact=None)
     elif view == 'archive':
       qs = PkTask.objects.exclude(completed__exact=None).order_by('-completed')
     else:
       qs = PkTask.objects.all()
-    paginator = Paginator(qs, 10)
-    try:
-      tasks = paginator.page(page)
-    except PageNotAnInteger:
-      tasks = paginator.page(1)
-    except EmptyPage:
-      tasks = paginator.page(paginator.num_pages)
-    serializer = PaginatedTaskSerializer(tasks, {'request': request})
+    #paginator = Paginator(qs, 10)
+    #try:
+    #  tasks = paginator.page(page)
+    #except PageNotAnInteger:
+    #  tasks = paginator.page(1)
+    #except EmptyPage:
+    #  tasks = paginator.page(paginator.num_pages)
+    serializer = TaskSerializer(qs, {'request': request})
     return Response(data = serializer.data, status=status.HTTP_200_OK)
 
   def destroy(self, request, pk=None):
@@ -343,6 +343,7 @@ class TaskViewSet(viewsets.ModelViewSet):
   def add_effort(self, request, pk=None):
     task = self.get_object()
     minutes = request.DATA.get('minutes')
+    LOG.info(request.DATA)
     try:
       minutes = int(minutes)
     except ValueError:

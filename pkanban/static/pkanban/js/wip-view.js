@@ -1,11 +1,26 @@
-pkanbanApp.controller('wipController', ['$scope', '$sce', 'Wip', 'Valuestream',
-   function($scope, $sce, Wip, Valuestream) {
+pkanbanApp.controller('wipController', ['$scope', 'Restangular',
+   function($scope, Restangular) {
+
+     var pkApi = Restangular.all('pk/');
 
      $scope.datamodel = {
-       wip: Wip.query(),
-       valuestreams: Valuestream.query(),
+       wip: undefined,
+       valuestreams: undefined,
        current_task: undefined
      }
+
+     // get the base data
+     pkApi.all('wip/').getList().then(function (wipList) {
+       $scope.datamodel.wip = wipList;
+     }, function errorCallback() {
+       console.log('Error while retrieving WIP');
+     });
+
+     pkApi.all('valuestream/').getList().then(function (valuestreamList) {
+       $scope.datamodel.valuestreams = valuestreamList;
+     }, function errorCallback() {
+       console.log('Error while retrieving valuestreams');
+     });
 
      $scope.getStream = function(streamname) {
        var retval, streams = $scope.datamodel.valuestreams.length;
@@ -18,8 +33,13 @@ pkanbanApp.controller('wipController', ['$scope', '$sce', 'Wip', 'Valuestream',
        return(retval);
      };
 
-     $scope.set_current_task = function(task) {
-       $scope.datamodel.current_task = task;
+     $scope.set_current_task = function(taskId) {
+       pkApi.one('task', taskId).get().then(function (task){
+         $scope.datamodel.current_task = task;
+       }, function errorCallback() {
+         console.log("Error while retrieving task " + taskId);
+       });
+       //$scope.datamodel.current_task = Task.get({id: taskId});
      }
 
 }]);
@@ -30,7 +50,7 @@ pkanbanApp.directive('pkTaskSelector', function() {
       e.preventDefault();
 
       scope.$apply(function() {
-        scope.set_current_task({task: scope.task});
+        scope.set_current_task({taskId: scope.task.id});
       });
     });
   };
@@ -45,7 +65,7 @@ pkanbanApp.directive('pkTaskSelector', function() {
   }
 });
 
-pkanbanApp.directive('pkTaskStreamBanner', ['Valuestream', function(Valuestream) {
+pkanbanApp.directive('pkTaskStreamBanner', function() {
   return {
     restrict: 'E',
     scope: {
@@ -54,7 +74,7 @@ pkanbanApp.directive('pkTaskStreamBanner', ['Valuestream', function(Valuestream)
     },
     templateUrl: '/static/pkanban/templates/task-stream-banner.html'
   };
-}]);
+});
 
 pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
 
@@ -80,7 +100,16 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
         $interval.cancel(timer);
         timerRunning = false;
         if(scope.datamodel.current_task) {
-          console.log('Now reporting minutes back');
+          var minutes = Math.round(scope.seconds/60);
+          console.log('Now reporting ' + minutes + ' minutes back for task ' + scope.datamodel.current_task);
+          //scope.datamodel.current_task.$add_effort({},{minutes: minutes});
+          if (minutes > 0){
+            scope.datamodel.current_task.effort += minutes;
+            scope.datamodel.current_task.put();
+          } else {
+            console.log('Nothing to update');
+          }
+          //scope.datamodel.current_task.customPOST({minutes: minutes},'add_effort/', {}, {});
         } else {
           console.log(scope.datamodel);
         }
