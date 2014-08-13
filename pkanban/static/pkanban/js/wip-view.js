@@ -60,7 +60,11 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        */
      }
 
-     $scope.updateDatamodel();
+     $scope.init = function() {
+       console.log("Wip init called");
+     };
+
+     //$scope.updateDatamodel();
 
 }]);
 

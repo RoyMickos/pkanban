@@ -38,7 +38,7 @@ pkanbanApp.directive('pkTaskView', function() {
     restrict: 'E',
     scope: {
       task: '=',
-      selected: true
+      //selected: true
     },
     templateUrl: '/static/pkanban/templates/task-view.html'
   };
@@ -109,6 +109,7 @@ pkanbanApp.directive('pkMainView', function() {
           pane.selected = false;
         });
         pane.selected = true;
+        pane.init();
       };
 
       this.addPane = function(pane) {
@@ -129,7 +130,8 @@ pkanbanApp.directive('pkTab', function(){
     restrict: 'E',
     transclude: true,
     scope: {
-      title: '@'
+      title: '@',
+      init: '&'
     },
     link: function(scope, element, attrs, mainViewCtrl) {
       mainViewCtrl.addPane(scope);
