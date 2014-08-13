@@ -30,7 +30,7 @@ pkanbanApi.factory('Valuestream', ['$resource', function($resource) {
 }]);
 */
 
-var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "restangular"]);
+var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "restangular", "ngSanitize"]);
 
 
 pkanbanApp.directive('pkTaskView', function() {
@@ -38,7 +38,7 @@ pkanbanApp.directive('pkTaskView', function() {
     restrict: 'E',
     scope: {
       task: '=',
-      mode: '=',
+      selected: true
     },
     templateUrl: '/static/pkanban/templates/task-view.html'
   };
@@ -46,7 +46,7 @@ pkanbanApp.directive('pkTaskView', function() {
 
 pkanbanApp.directive('pkTaskEdit', function() {
 
-  // in case task get changed, update content to reflect it
+  /* in case task get changed, update content to reflect it
   function link(scope, element, attrs){
     console.log(attrs);
     scope.$watch(attrs.task, function(value) {
@@ -54,12 +54,12 @@ pkanbanApp.directive('pkTaskEdit', function() {
       scope.task = value;
     })
   }
+  */
 
   return {
     restrict: 'E',
     scope: {
-      task: '=',
-      mode: '=',
+      task: '='
     },
     templateUrl: '/static/pkanban/templates/task-edit.html'
   };

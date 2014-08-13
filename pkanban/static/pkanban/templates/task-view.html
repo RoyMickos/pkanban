@@ -1,2 +1,5 @@
 <span class="pk-task-title">{{task.name}}</span>
-<div ng-bind-html="task.description"></div>
+<div ng-show="selected">
+  <!-- input class="pk-task-title-edit" ng-model="task.name" ng-show="task"></input><br /-->
+  <div ng-bind-html="task.description"></div>
+</div>

@@ -4,26 +4,42 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      var pkApi = Restangular.all('pk/');
 
      $scope.datamodel = {
-       wip: undefined,
-       valuestreams: undefined,
+       wip: [],
+       valuestreams: [],
        current_task: undefined
      }
 
-     // get the base data
-     pkApi.all('wip/').getList().then(function (wipList) {
-       $scope.datamodel.wip = wipList;
-     }, function errorCallback() {
-       console.log('Error while retrieving WIP');
-     });
+     $scope.updateDatamodel = function () {
+         // get the base data
+         pkApi.all('wip/').getList().then(function (wipList) {
+           $scope.datamodel.wip = [];
+           var items = wipList.length, wipItem;
+           for (var i=0; i < items; i++) {
+             wipItem = wipList[i];
+             pkApi.one('task', wipItem.task).get().then(function (task) {
+               $scope.datamodel.wip.push(task);
+             }, function() {
+               console.log('Error retrieving task id ' + wipItem.task);
+             })
+           }
+         }, function errorCallback() {
+           console.log('Error while retrieving WIP');
+         });
 
-     pkApi.all('valuestream/').getList().then(function (valuestreamList) {
-       $scope.datamodel.valuestreams = valuestreamList;
-     }, function errorCallback() {
-       console.log('Error while retrieving valuestreams');
-     });
+         pkApi.all('valuestream/').getList().then(function (valuestreamList) {
+           $scope.datamodel.valuestreams = valuestreamList;
+         }, function errorCallback() {
+           console.log('Error while retrieving valuestreams');
+         });
+     }
 
      $scope.getStream = function(streamname) {
-       var retval, streams = $scope.datamodel.valuestreams.length;
+       var retval, streams;
+       if ($scope.datamodel.valuestreams){
+        streams = $scope.datamodel.valuestreams.length;
+      } else {
+        streams = 0;
+      }
        for (i=0; i < streams; i++){
          if ($scope.datamodel.valuestreams[i].streamname === streamname) {
              retval = $scope.datamodel.valuestreams[i];
@@ -33,14 +49,18 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        return(retval);
      };
 
-     $scope.set_current_task = function(taskId) {
-       pkApi.one('task', taskId).get().then(function (task){
-         $scope.datamodel.current_task = task;
+     $scope.set_current_task = function(task) {
+       //pkApi.one('task', taskId).get().then(function (task){
+       $scope.datamodel.current_task = task;
+       /*
        }, function errorCallback() {
          console.log("Error while retrieving task " + taskId);
        });
        //$scope.datamodel.current_task = Task.get({id: taskId});
+       */
      }
+
+     $scope.updateDatamodel();
 
 }]);
 

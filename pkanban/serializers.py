@@ -33,7 +33,7 @@ class PhaseSerializer(serializers.ModelSerializer):
 
 class WipSerializer(serializers.ModelSerializer):
   phase = serializers.SlugRelatedField(read_only=True, slug_field='name')
-  task = TaskSerializer()
+  #task = TaskSerializer()
   class Meta:
     model = models.PkWipTasks
     fields = ('phase', 'task')
