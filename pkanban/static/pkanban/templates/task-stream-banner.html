@@ -1,8 +1,11 @@
-<div>
-  {{scope}}
-  <span ng-repeat="phase in situation.past"
-        class="wip-task-phase-past">{{phase}}</span>
-  <span class="wip-task-phase-current">{{situation.present}}</span>
+<span class="pk-task-banner">
+  <em ng-show="!situation.present">No task selected </em>
+  <span ng-repeat="phase in situation.past" class="wip-task-phase">
+  <s class="text-capitalize">{{phase}}</s> <i class="fa fa-angle-right"></i> </span>
+  <mark class="wip-task-phase text-capitalize">{{situation.present}}</mark>
   <span ng-repeat="phase in situation.future"
-        class="wip-task-phase-future">{{phase}}</span>
-</div>
+        class="wip-task-phase text-capitalize"><i class="fa fa-angle-right"></i> {{phase}}</span>
+   <button type="button" class="btn btn-default" ng-click="advanceCurrentTask()">
+     <i class="fa fa-arrow-circle-right js-task-proceed" tooltip="{{actionTooltip}}"></i>
+   </button>
+</span>

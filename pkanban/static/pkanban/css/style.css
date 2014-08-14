@@ -2,78 +2,24 @@
 @import "../../dojo/resources/dojo.css";
 @import "../../dijit/themes/claro/claro.css";
 */
-body {
-	font-family:"Verdana", Geneva, sans-serif;
-	font-size:14px;
-	/*width: 800px;*/
+.wip-task-phase {
+	font-variant: small-caps;
 }
-body.pkanban {
-	width: 600px;
+.pk-wip-header {
+	height: 40px;
+	border-bottom: 1px solid #ddd;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
-body.task {
-	width: 600px;
-}
-body.stream {
-	width: 800px;
-}
-#message {
-	background-color:#D3D3D3;
-	width:500px;
-}
-pre {
-	font-size: 8pt;
-}
-label.newTaskForm {
-	font-weight:bold;
-}
-td, th {
-	padding-right:15px;
-}
-tr.minorinfo {
-	font-size: 8pt;
-}
-td.remark {
-	color:#F08080;
-}
-table.test {
-	color:red;
-}
-tr.fixed_phase {
-	background-color:#F0F0F0;
-}
-.info {
-	color:#F08080;
-}
-.area {
-	text-align:center;
-	color:#333366;
-}
-#blog_wrapper, #board_wrapper {
-	border: solid;
-	border-width: 1px;
-	border-color: #333366;
-}
-.dojoblue {
-	color:#333366;
-}
-.pkanbanIconProceed {
-	background-image: url('/static/images/arrow.png');
-	background-repeat: no-repeat;
-	width: 16px;
-	height: 16px;
+.pk-wip-header > div {
+	line-height: 33px;
 }
 
-.pkanbanMainView {
-	background-image: url('/static/images/kanban.png');
-	background-repeat: no-repeat;
-	width: 16px;
-	height: 16px;
-}
-
-#pcapa {
-	width:30px;
-}
-#pdesc {
-	rows:4;
-	cols:30;
+.pk-task-description-edit {
+	width: 100%;
+	padding: 6px 12px;
+	color: #555;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }

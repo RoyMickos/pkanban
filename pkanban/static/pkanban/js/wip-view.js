@@ -9,12 +9,14 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        valuestreams: [],
        current_task: undefined
      }
+     $scope.unsavedChanges = false;
+     $scope.currentTaskChanged = false;
 
      $scope.updateDatamodel = function () {
+         $scope.datamodel.current_task = undefined;
          // get the base data
          pkApi.all('wip/').getList().then(function (wipList) {
            $scope.datamodel.wipData = wipList;
-           console.log($scope.datamodel.wipData);
            $scope.datamodel.wip = [];
            var items = wipList.length, wipItem;
            for (var i=0; i < items; i++) {
@@ -35,7 +37,7 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
            console.log('Error while retrieving valuestreams');
          });
      }
-
+     //npm -> ../lib/node_modules/npm/bin/npm-cli.js
      $scope.findWipDataRecord = function(taskId){
        var wipData;
        //console.log(taskId);
@@ -65,8 +67,6 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        } else {
          numberOfStreams = 0;
        }
-       console.log('Nmbr of streams: ' + numberOfStreams);
-       console.log(task);
        //console.log($scope.datamodel.valuestreams);
        // find stream
        for (i=0; i < numberOfStreams; i++){
@@ -79,32 +79,35 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        // find phase
        phase = wipData.phase;
 
-       console.log(stream + ' ' + phase);
-       console.log(stream && phase);
        // find past, present, and current phases
        if (stream && phase) {
          for(i=0; i < stream.phases.length; i++) {
-           if (status == 'past') {
+           if (status === 'past') {
              if (stream.phases[i] === phase){
                retval.present = phase;
                status = 'future';
              } else {
-               retval.past.push(stream.phases[i]);
+               if (retval.past.length === 0) {
+                 retval.past.push(stream.phases[i]);
+               } else {
+                 retval.past.push(stream.phases[i]);
+               }
              }
            } else {
              retval.future.push(stream.phases[i]);
            }
          }
        }
-       console.log(retval);
        angular.extend(wipData, {situation: retval});
        return(retval);
      }
 
      $scope.getSituation = function(task) {
-       var wipData = $scope.findWipDataRecord(task.id);
-       //console.log(task);
-       //console.log($scope.datamodel);
+       var wipData;
+       if (task) {
+         wipData = $scope.findWipDataRecord(task.id);
+       }
+
        if (wipData) {
          if (wipData.situation){
            return wipData.situation;
@@ -115,20 +118,45 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      };
 
      $scope.set_current_task = function(task) {
-       //pkApi.one('task', taskId).get().then(function (task){
+       if ($scope.unsavedChanges){
+         $scope.datamodel.current_task.put();
+       }
        $scope.datamodel.current_task = task;
-       /*
-       }, function errorCallback() {
-         console.log("Error while retrieving task " + taskId);
-       });
-       //$scope.datamodel.current_task = Task.get({id: taskId});
-       */
+       $scope.currentTaskChanged = true;
+     }
+
+     $scope.saveCurrentTask = function() {
+       if ($scope.datamodel.current_task){
+         $scope.datamodel.current_task.put();
+       }
+     }
+
+     $scope.advanceCurrentTask = function () {
+       if ($scope.datamodel.current_task) {
+         $scope.datamodel.current_task.doGET("advance_task/")
+         .then(function () {
+           $scope.updateDatamodel();
+         }, function(response){
+           console.log(response);
+         });
+       }
      }
 
      $scope.init = function() {
        console.log("Wip init called");
      };
 
+     $scope.$watch("datamodel.current_task",
+        function(newValue, oldValue) {
+          if ($scope.currentTaskChanged){
+            $scope.currentTaskChanged = false;
+          } else {
+            if(!angular.equals(newValue, oldValue))
+              $scope.unsavedChanges = true;
+          }
+        },
+        true
+     );
      //$scope.updateDatamodel();
 
 }]);
@@ -158,7 +186,9 @@ pkanbanApp.directive('pkTaskStreamBanner', function() {
   return {
     restrict: 'E',
     scope: {
-      situation: '='
+      situation: '=',
+      advanceCurrentTask: '&',
+      actionTooltip: '@'
     },
     templateUrl: '/static/pkanban/templates/task-stream-banner.html'
   };
@@ -189,17 +219,12 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
         timerRunning = false;
         if(scope.datamodel.current_task) {
           var minutes = Math.round(scope.seconds/60);
-          console.log('Now reporting ' + minutes + ' minutes back for task ' + scope.datamodel.current_task);
           //scope.datamodel.current_task.$add_effort({},{minutes: minutes});
           if (minutes > 0){
             scope.datamodel.current_task.effort += minutes;
             scope.datamodel.current_task.put();
-          } else {
-            console.log('Nothing to update');
           }
           //scope.datamodel.current_task.customPOST({minutes: minutes},'add_effort/', {}, {});
-        } else {
-          console.log(scope.datamodel);
         }
     }
 
@@ -217,7 +242,6 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
 
     // requires jquery, does not work with jqLite
     element.on('click', '.fa-clock-o', function() {
-      console.log('straight timer started on:' + scope.datamodel.current_task);
       if (timerRunning) {
         stopTimer();
       } else {
@@ -227,7 +251,6 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
     });
 
     element.on('click', '.fa-circle-o-notch', function() {
-      console.log('pomodoro started on' + scope.datamodel.current_task);
       if (timerRunning){
         stopTimer();
       } else {
