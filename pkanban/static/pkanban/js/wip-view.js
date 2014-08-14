@@ -5,6 +5,7 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
 
      $scope.datamodel = {
        wip: [],
+       wipData: [],
        valuestreams: [],
        current_task: undefined
      }
@@ -12,6 +13,8 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      $scope.updateDatamodel = function () {
          // get the base data
          pkApi.all('wip/').getList().then(function (wipList) {
+           $scope.datamodel.wipData = wipList;
+           console.log($scope.datamodel.wipData);
            $scope.datamodel.wip = [];
            var items = wipList.length, wipItem;
            for (var i=0; i < items; i++) {
@@ -33,20 +36,82 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
          });
      }
 
-     $scope.getStream = function(streamname) {
-       var retval, streams;
+     $scope.findWipDataRecord = function(taskId){
+       var wipData;
+       //console.log(taskId);
+       //console.log($scope.datamodel);
+       for (i=0; i < $scope.datamodel.wipData.length; i++) {
+         if (taskId === $scope.datamodel.wipData[i].task) {
+           wipData = $scope.datamodel.wipData[i];
+           break;
+         }
+       }
+       return wipData;
+     }
+
+     $scope.findSituationData = function(task) {
+       var record = $scope.findWipDataRecord(task.id);
+       return record.situation;
+     }
+
+     $scope.updateSituationData = function(task, wipData){
+       var retval = {
+         past: [],
+         present: undefined,
+         future: []
+       }, stream, numberOfStreams, phase, status = 'past';
        if ($scope.datamodel.valuestreams){
-        streams = $scope.datamodel.valuestreams.length;
-      } else {
-        streams = 0;
-      }
-       for (i=0; i < streams; i++){
-         if ($scope.datamodel.valuestreams[i].streamname === streamname) {
-             retval = $scope.datamodel.valuestreams[i];
+         numberOfStreams = $scope.datamodel.valuestreams.length;
+       } else {
+         numberOfStreams = 0;
+       }
+       console.log('Nmbr of streams: ' + numberOfStreams);
+       console.log(task);
+       //console.log($scope.datamodel.valuestreams);
+       // find stream
+       for (i=0; i < numberOfStreams; i++){
+         //console.log($scope.datamodel.valuestreams[i].streamname + '/' + task.streamname);
+         if ($scope.datamodel.valuestreams[i].streamname === task.valuestream) {
+             stream = $scope.datamodel.valuestreams[i];
              break;
            }
+       }
+       // find phase
+       phase = wipData.phase;
+
+       console.log(stream + ' ' + phase);
+       console.log(stream && phase);
+       // find past, present, and current phases
+       if (stream && phase) {
+         for(i=0; i < stream.phases.length; i++) {
+           if (status == 'past') {
+             if (stream.phases[i] === phase){
+               retval.present = phase;
+               status = 'future';
+             } else {
+               retval.past.push(stream.phases[i]);
+             }
+           } else {
+             retval.future.push(stream.phases[i]);
+           }
          }
+       }
+       console.log(retval);
+       angular.extend(wipData, {situation: retval});
        return(retval);
+     }
+
+     $scope.getSituation = function(task) {
+       var wipData = $scope.findWipDataRecord(task.id);
+       //console.log(task);
+       //console.log($scope.datamodel);
+       if (wipData) {
+         if (wipData.situation){
+           return wipData.situation;
+         } else {
+           return $scope.updateSituationData(task, wipData);
+         }
+       }
      };
 
      $scope.set_current_task = function(task) {
@@ -93,8 +158,7 @@ pkanbanApp.directive('pkTaskStreamBanner', function() {
   return {
     restrict: 'E',
     scope: {
-      valuestream: '=',
-      taskphase: '=',
+      situation: '='
     },
     templateUrl: '/static/pkanban/templates/task-stream-banner.html'
   };

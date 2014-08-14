@@ -1,3 +1,8 @@
-<div><span ng-repeat="phase in valuestream.phases"
-           class="{{phase === taskphase ? 'wip-task-phase current-phase':'wip-task-phase'}}">
-           {{phase}} </span> (in {{taskphase}}) </div>
+<div>
+  {{scope}}
+  <span ng-repeat="phase in situation.past"
+        class="wip-task-phase-past">{{phase}}</span>
+  <span class="wip-task-phase-current">{{situation.present}}</span>
+  <span ng-repeat="phase in situation.future"
+        class="wip-task-phase-future">{{phase}}</span>
+</div>
