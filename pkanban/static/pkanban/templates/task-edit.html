@@ -1,4 +1,6 @@
 <div class="pk-task-edit">
   <input class="form-control pk-task-title-edit" ng-model="task.name" ng-show="task"></input><br />
-  <div class="pk-task-description-edit" ng-model="task.description" contenteditable="true" ck-editor></div>
+  <div class="pk-task-description-edit" ng-show="task">
+    <textarea ng-model="task.description" contenteditable="true" ck-editor></textarea>
+  </div>
 </div>

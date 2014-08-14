@@ -12,6 +12,8 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      $scope.unsavedChanges = false;
      $scope.currentTaskChanged = false;
 
+     $scope.taskProceedTooltip = "Move task forward in valuestream";
+
      $scope.updateDatamodel = function () {
          $scope.datamodel.current_task = undefined;
          // get the base data
@@ -118,7 +120,7 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      };
 
      $scope.set_current_task = function(task) {
-       if ($scope.unsavedChanges){
+       if ($scope.datamodel.current_task && $scope.unsavedChanges){
          $scope.datamodel.current_task.put();
        }
        $scope.datamodel.current_task = task;
