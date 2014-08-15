@@ -15,6 +15,13 @@
 	line-height: 33px;
 }
 
+.pk-tool-wrapper {
+	height: 44px;
+	border-bottom: 1px solid rgba(142, 185, 223, 0.89);
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+
 .pk-task-description-edit {
 	width: 100%;
 	padding: 6px 12px;
@@ -22,4 +29,9 @@
 	background-color: #fff;
 	border: 1px solid #ccc;
 	border-radius: 4px;
+}
+
+
+.panel-group .panel {
+	overflow: visible;
 }

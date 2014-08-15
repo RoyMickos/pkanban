@@ -125,6 +125,7 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        }
        $scope.datamodel.current_task = task;
        $scope.currentTaskChanged = true;
+       $scope.unsavedChanges = false;
      }
 
      $scope.saveCurrentTask = function() {
