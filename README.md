@@ -1,8 +1,11 @@
 #pkanban
 
 Simple personal kanban application, created as a django <https://www.djangoproject.com/>
-application. Django acts as a REST backbone, the template engine is not used, and 
-front-end is based on dojo <http://dojotoolkit.org/>.
+application. Django acts as a REST backbone, the template engine is not used, and
+front-end Angular and Bootstrap.
+
+Currently this is work-in-progress towards next major iteration and codebase is not
+stable.
 
 ##Installation
 This is a django application so you will need a django project to put it in.
@@ -25,6 +28,3 @@ static files, then you need the following configuration:
 With apache, copy static files to the `DocumentRoot` of your virtual host. The front end
 http calls will assume `/spa/lib` as the path. The urlconf is such that a http request to
 `pkanban/` will cause a redirect to `/spa/lib/index.html`.
-
-
-
