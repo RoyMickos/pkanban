@@ -1,0 +1,131 @@
+{% extends "pkanban/base.html" %}
+{% load staticfiles %}
+
+{% block head_css %}
+  {{block.super}}
+  <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/bootstrap.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/font-awesome.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body_js %}
+  {{block.super}}
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/lodash.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular.js"></script>
+  <!-- script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-resource.js"></script -->
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-sanitize.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-cookies.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/restangular.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/ui-bootstrap-tpls-0.11.0.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/ckeditor/ckeditor.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/app.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/wip-view.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/backlog-view.js"></script>
+{% endblock %}
+
+{% block body_params %}ng-app="pkanbanApp"{% endblock %}
+
+{% block content %}
+
+  <h3> Personal Kanban </h3>
+  {% verbatim %}
+  <div class="container-fluid">
+    <pk-main-view>
+
+      <div ng-controller="wipController"> <!-- new wip -->
+        <pk-tab title="work-in-progress" init="updateDatamodel()">
+          <h4> Work In Progress </h4>
+          <accordion close-others="true" id="pk-wip">
+            <accordion-group ng-repeat="task in datamodel.wip">
+              <accordion-heading>
+                <span ng-click="set_current_task(task)">{{task.name}}</span>
+              </accordion-heading>
+              <div class="pk-tool-wrapper">
+                <pk-task-stream-banner situation="getSituation(task)"
+                    advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
+                </pk-task-stream-banner>
+                <button type="button" class="btn btn-default"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
+                <pk-pomodoro-timer></pk-pomodoro-timer>
+              </div>
+              <pk-task-edit task="datamodel.current_task"></pk-task-edit>
+            </accordion-group>
+          </accordion>
+        </pk-tab>
+      </div>
+
+      <div ng-controller="backlogController">
+        <pk-tab title="backlog" init="updateModel()">
+          <h4> Things to do, good intentions... </h4>
+          <accordion close-others="true" id="pk-backlog">
+            <accordion-group ng-repeat="task in model.tasks">
+              <accordion-heading>
+                <span ng-click="saveChanges(task)">{{task.name}}</span>
+              </accordion-heading>
+              <pk-select-valuestream task="task"
+                                     streams="model.valuestreams"
+                                     candidate="model.stream"
+                                     select="selectValuestream()"
+                                     error="model.error" error-Action="dismiss()">
+              </pk-select-valuestream>
+              <pk-task-edit task="task"></pk-task-edit>
+              <!--
+              <div class="pk-task-description-edit">
+                <textarea ng-model="task.description" contenteditable="true" ck-editor></textarea>
+              </div>
+              -->
+            </accordion-group>
+          </accordion>
+        </pk-tab>
+      </div>
+
+      <pk-tab title="done">
+        <div ng-controller="taskController">
+          <ul class="list-unstyled">
+            <li ng-repeat="task in tasks">
+              <pk-task-view task="task"></pk-task-view>
+            </li>
+          </ul>
+        </div>
+      </pk-tab>
+
+      <div ng-controller="wipController"> <!-- old wip -->
+        <pk-tab title="old wip view" init="updateDatamodel()">
+          <div class="row-fluid">
+            <div class="col-md-2">
+              <div class="pk-wip-header"><div><strong>Tasks:</strong></div></div>
+              <ul class="list-unstyled">
+                <li ng-repeat="task in datamodel.wip" class="js-select-task"
+                    task="task" on-click="set_current_task(task)" pk-task-selector>
+                  {{task.name}}
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-10 pk-wip-tools">
+              <div class="pk-wip-header">
+                <pk-task-stream-banner situation="getSituation(datamodel.current_task)"
+                    advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
+                </pk-task-stream-banner>
+                <button type="button" class="btn btn-default"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
+                <pk-pomodoro-timer></pk-pomodoro-timer>
+              </div>
+              <pk-task-edit task="datamodel.current_task"></pk-task-edit>
+            </div>
+          </div>
+        </pk-tab>
+      </div>
+    </pk-main-view>
+  </div>
+  {% endverbatim %}
+
+<audio id="timer-expired-alert"><source src="{{ STATIC_URL }}pkanban/audio/tom_jerry_msg_tone.mp3" type="audio/mpeg"></source></audio>
+
+{% endblock %}
+{% block end_init %}
+<script>
+// Add the CSRF Token
+var pkanbanApp = angular.module('pkanbanApp'); // Not including a list of dependent modules (2nd parameter to `module`) "re-opens" the module for additional configuration
+pkanbanApp.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+}]);
+</script>
+{% endblock %}

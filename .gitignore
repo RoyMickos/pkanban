@@ -11,7 +11,6 @@ pkanban/static/spa/src/put-selector/
 pkanban/static/spa/src/util/
 pkanban/static/spa/src/xstyle/
 pkanban/static/spa/lib/
-pkanban/templates
 # setuptools
 dist/
 etc/django-pkanban/dist

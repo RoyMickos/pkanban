@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load staticfiles %}
+    {% block head_css %}
+      <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/style.css" type="text/css" media="screen" />
+      <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
+    {% endblock %}
+    <title>Personal Kanban</title>
+  </head>
+  <body {% block body_params %}{% endblock %}>
+    {% if user.is_authenticated %}Welcome, {{user.username}}. <a href="/pkanban/logout/">Logout</a>{% endif %}
+    {% block content %}
+    {% endblock %}
+    {% block body_js %}
+    {% endblock %}
+    {% block end_init %}
+    {% endblock %}
+  </body>
+</html>
