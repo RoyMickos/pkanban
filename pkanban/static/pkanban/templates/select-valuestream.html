@@ -1,10 +1,11 @@
 <div class="pk-tool-wrapper">
   <form class="form-inline" role="form">
-    <select class="form-control" ng-model="candidate"
+    <select class="form-control pk-valuestream-select" ng-model="candidate"
             ng-options="stream for stream in streams">
       <option value="">--- Transfer to WIP by selecting a valuestream ---</option>
     </select>
-    <button type="button" class="btn btn-default" ng-disabled="!candidate"
+    <button type="button" class="btn btn-default pk-valuestream-action" ng-disabled="!candidate"
             ng-click="select()">Confirm</button>
-  </from>
+  </form>
+  <alert type="danger" close="errorAction()" ng-show="error">{{error}}</alert>
 </div>

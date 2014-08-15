@@ -10,7 +10,8 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
     tasks: [],
     valuestreams: [],
     current_task: undefined,
-    stream: undefined
+    stream: undefined,
+    error: undefined
   }
   $scope.unsavedChanges = false;
   $scope.currentTaskChanged = false;
@@ -58,6 +59,10 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
      true
   );
 
+  $scope.dismiss = function() {
+    $scope.model.error = undefined;
+  }
+
   /*
   $scope.$watch("model.stream",
     function(newValue, oldValue) {
@@ -71,11 +76,15 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
   */
 
   $scope.selectValuestream = function(){
-    /**
-      This gets called by ng-change BEFORE the actual model change happens,
-      so we need to defer the processing of the selection.
-    */
-    console.log("selecting valuestream " + $scope.model.stream + " for task " + $scope.model.current_task.name);
+    if ($scope.model.current_task) {
+      $scope.model.current_task.post('set_valuestream/', {valuestream: $scope.model.stream})
+      .then(function() {
+        $scope.updateModel();
+      }, function(err){
+        $scope.model.error = err.data + '  (' + err.status + ')';
+      });
+    }
+    //$scope.model.error = "selecting valuestream " + $scope.model.stream + " for task " + $scope.model.current_task.name;
   };
 
 }]);
@@ -87,7 +96,9 @@ pkanbanApp.directive('pkSelectValuestream', function() {
       streams: '=',
       task: '=',
       candidate: '=',
-      select: '&'
+      select: '&',
+      error: '=',
+      errorAction: '&'
     },
     templateUrl: "/static/pkanban/templates/select-valuestream.html"
   };

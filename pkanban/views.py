@@ -311,7 +311,7 @@ class TaskViewSet(viewsets.ModelViewSet):
       try:
           valuestream.nextPhase(task)
       except WipLimitReached:
-          return Response("Work-in-progress limit for \"%s\" has been reached" % valuestream.streamname,
+          return Response('Work-in-progress limit for "%s" has been reached' % valuestream.streamname,
             status=status.HTTP_400_BAD_REQUEST)
       except TaskAlreadyCompleted:
           return Response("Corrupted data: task \"%s\" has already been completed." % task.name,
