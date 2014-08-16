@@ -149,3 +149,58 @@ pkanbanApp.controller('taskController', ['$scope', 'Restangular', function($scop
   });
   //$scope.tasks = Task.query();
 }]);
+
+// controller for the button to open new task modal
+pkanbanApp.service('NewTask', ['$rootScope',
+  function($rootScope) {
+    this.new_task = {
+      name: undefined,
+      description: undefined,
+      effort: 0
+    };
+  }
+]);
+
+pkanbanApp.controller('NewTaskCtrl', ['$scope', '$modal', '$log', 'Restangular', 'NewTask',
+  function($scope, $modal, $log, Restangular, NewTask) {
+    $scope.new_task = NewTask.new_task;
+
+    $scope.submit_task = function(){
+      console.log('Submit task called for:');
+      console.log($scope.new_task);
+      $scope.new_task.name = undefined;
+      $scope.new_task.description = undefined;
+    };
+
+    $scope.open = function(){
+      var modalInstance = $modal.open({
+        templateUrl: '/static/pkanban/templates/new-task.html',
+        controller: 'ModalInstanceCtrl',
+        size: 'lg',
+      });
+
+      modalInstance.result.then(function (new_task) {
+        $scope.new_task = new_task;
+        $scope.submit_task();
+      }, function() {
+        $log.info('Cancelled new task creation');
+      });
+    };
+
+
+}]);
+
+// controller for the modal itself
+pkanbanApp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'NewTask',
+  function($scope, $modalInstance, NewTask){
+    $scope.new_task = NewTask.new_task;
+
+    $scope.create_task = function() {
+      $modalInstance.close($scope.new_task);
+    };
+
+    $scope.cancel = function() {
+      $modalInstance.dismiss('cancel');
+    };
+  }
+]);

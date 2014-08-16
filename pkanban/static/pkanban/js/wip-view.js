@@ -131,6 +131,7 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
      $scope.saveCurrentTask = function() {
        if ($scope.datamodel.current_task){
          $scope.datamodel.current_task.put();
+         $scope.unsavedChanges = false;
        }
      }
 
