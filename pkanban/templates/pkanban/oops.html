@@ -1,0 +1,15 @@
+{% extends "pkanban/base.html" %}
+{% load staticfiles %}
+
+{% block head_css %}
+  {{block.super}}
+  <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/bootstrap.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/font-awesome.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block content %}
+<h1>Something wrong here</h1>
+
+<p>The internal configuration of this app is not right. Please alert
+<a href="mailto:roy.mickos@gmail.com">owner</a> of this.</p>
+{% endblock %}
