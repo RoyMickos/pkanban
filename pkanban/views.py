@@ -4,22 +4,21 @@ from models import WipLimitReached, TaskAlreadyCompleted, TaskNotInThisStream
 import logging, json
 
 from forms import *
-from django.shortcuts import get_object_or_404, render_to_response, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response, HttpResponseRedirect, redirect
 from django.views.decorators.csrf import csrf_protect
 from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+#from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
 # rest framework
 from django.http import Http404
 from django.contrib.auth.models import User
 from rest_framework import status
-#from rest_framework.reverse import reverse
-#from rest_framework.decorators import api_view
-#from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import action, link
@@ -30,11 +29,33 @@ from pkanban.serializers import WipSerializer, ValueStreamSerializer, ValueStrea
 dev = False
 LOG = logging.getLogger(__name__)
 
-@login_required(login_url='/pkanban/login/')
+#@login_required(login_url='/pkanban/login/')
+# not using decorator in order to perform autologin in demo
 def load_app(request):
-  c = RequestContext(request)
-  c.update(csrf(request))
-  return render_to_response('pkanban/pkanban_index.html', c)
+  if hasattr(settings, 'DEMO'):
+    demo = settings.DEMO
+  else:
+    demo = False
+
+  if request.user.is_authenticated():
+    c = RequestContext(request)
+    c.update(csrf(request))
+    c.update({'demo': demo})
+    return render_to_response('pkanban/pkanban_index.html', c)
+  else:
+    if demo:
+      user = authenticate(username='guest', password='guest_password')
+      if user is not None:
+        if user.is_active:
+          login(request, user)
+          return redirect(load_app)
+        else:
+          return redirect(something_wrong)
+      else:
+        return redirect(something_wrong)
+    else:
+      return redirect('/pkanban/login/?next=/pkanban/')
+
 
 #def show_app(request):
 #  c = RequestContext(request)

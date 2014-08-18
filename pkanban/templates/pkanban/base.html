@@ -11,7 +11,7 @@
     <title>Personal Kanban</title>
   </head>
   <body {% block body_params %}{% endblock %}>
-    {% if user.is_authenticated %}Welcome, {{user.username}}. <a href="/pkanban/logout/">Logout</a>{% endif %}
+    {% if user.is_authenticated %}Welcome, {{user.username}}. {% if not demo %}<a href="/pkanban/logout/">Logout</a>{% endif %}{% endif %}
     {% block content %}
     {% endblock %}
     {% block body_js %}
