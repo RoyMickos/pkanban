@@ -8,11 +8,10 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
-    #url(r'^$', show_board),
-    #url(r'^$', show_spa),
     url(r'^$', load_app),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'pkanban/login.html'}),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/pkanban/login/?next=/pkanban/'}),
+    url(r'^oops/$', something_wrong),
     url(r'^streams/', editBoard),
     url(r'^nphase/', newPhase),
     url(r'^nstream/', newStream),

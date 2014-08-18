@@ -56,6 +56,8 @@ def load_app(request):
     else:
       return redirect('/pkanban/login/?next=/pkanban/')
 
+def something_wrong(request):
+  return render_to_response('pkanban/oops.html')
 
 #def show_app(request):
 #  c = RequestContext(request)
