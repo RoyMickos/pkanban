@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     #url(r'^$', show_spa),
     url(r'^$', load_app),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'pkanban/login.html'}),
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/login/'}),
+    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/pkanban/login/?next=/pkanban/'}),
     #url(r'^Newban/', show_spa),
     # task view below needs to be rewritten
     #url(r'^Task/(?P<object_id>\d+)/$', object_detail,

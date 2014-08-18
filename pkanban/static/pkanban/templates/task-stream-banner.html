@@ -5,7 +5,7 @@
   <mark class="wip-task-phase text-capitalize">{{situation.present}}</mark>
   <span ng-repeat="phase in situation.future"
         class="wip-task-phase text-capitalize"><i class="fa fa-angle-right"></i> {{phase}}</span>
-   <button type="button" class="btn btn-default" ng-click="advanceCurrentTask()">
+   <button type="button" class="btn btn-warning" ng-click="advanceCurrentTask()">
      <i class="fa fa-arrow-circle-right js-task-proceed" tooltip="{{actionTooltip}}"></i>
    </button>
 </span>

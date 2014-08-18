@@ -62,13 +62,6 @@ def show_app(request):
   c.update(csrf(request))
   return render_to_response('pkanban/pkanban_index.html', c)
 
-#def run_tests(request):
-#    """ run_tests
-#    return qunit test page
-#    """
-#   c = RequestContext(request)
-#    return render_to_response('tests.html', c)
-
 def setValuestream(aTask, requestData, valuestreams, log):
     sname = requestData['valuestream'].strip()
     aStream = None
@@ -295,9 +288,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     # check if task is in WIP
     if PkWipTasks.objects.filter(task=task).exists():
       PkWipTasks.objects.filter(task=task).delete()
-    task.valuestream = None
-    task.complete()
-    task.save()
+    # change - delete means delete
+    super(TaskViewSet,self).destroy(self, request, pk)
     return Response("OK", status=status.HTTP_200_OK)
 
   @action()

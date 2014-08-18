@@ -1,0 +1,9 @@
+<ul class="list-group">
+  <li class="list-group-item"><div ng-bind-html="task.description"></div></li>
+  <li class="list-group-item"><span class="text-info">Effort (hh:mm):</span> {{task.effort | timer}}</li>
+  <li class="list-group-item"><span class="text-info">Events:</span>
+    <ul class="list-unstyled">
+      <li ng-repeat="event in task.logs">{{event.time}}: {{event.event}}</li>
+    </ul>
+  </li>
+</ul>

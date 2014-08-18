@@ -21,6 +21,7 @@
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/app.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/wip-view.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/backlog-view.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/archive-view.js"></script>
 {% endblock %}
 
 {% block body_params %}ng-app="pkanbanApp"{% endblock %}
@@ -54,7 +55,7 @@
                 <pk-task-stream-banner situation="getSituation(task)"
                     advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
                 </pk-task-stream-banner>
-                <button type="button" class="btn btn-default"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
+                <button type="button" class="btn btn-success"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
                 <pk-pomodoro-timer></pk-pomodoro-timer>
               </div>
               <pk-task-edit task="datamodel.current_task"></pk-task-edit>
@@ -79,51 +80,23 @@
                                      delete-task="deleteTask(task)">
               </pk-select-valuestream>
               <pk-task-edit task="task"></pk-task-edit>
-              <!--
-              <div class="pk-task-description-edit">
-                <textarea ng-model="task.description" contenteditable="true" ck-editor></textarea>
-              </div>
-              -->
             </accordion-group>
           </accordion>
         </pk-tab>
       </div>
 
-      <pk-tab title="done">
-        <div ng-controller="taskController">
-          <ul class="list-unstyled">
-            <li ng-repeat="task in tasks">
-              <pk-task-view task="task"></pk-task-view>
-            </li>
-          </ul>
-        </div>
-      </pk-tab>
-
-      <div ng-controller="wipController"> <!-- old wip -->
-        <pk-tab title="old wip view" init="updateDatamodel()">
-          <div class="row-fluid">
-            <div class="col-md-2">
-              <div class="pk-wip-header"><div><strong>Tasks:</strong></div></div>
-              <ul class="list-unstyled">
-                <li ng-repeat="task in datamodel.wip" class="js-select-task"
-                    task="task" on-click="set_current_task(task)" pk-task-selector>
-                  {{task.name}}
-                </li>
-              </ul>
-            </div>
-            <div class="col-md-10 pk-wip-tools">
-              <div class="pk-wip-header">
-                <pk-task-stream-banner situation="getSituation(datamodel.current_task)"
-                    advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
-                </pk-task-stream-banner>
-                <button type="button" class="btn btn-default"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
-                <pk-pomodoro-timer></pk-pomodoro-timer>
-              </div>
-              <pk-task-edit task="datamodel.current_task"></pk-task-edit>
-            </div>
-          </div>
+      <div ng-controller="archiveController">
+        <pk-tab title="done" init="updateModel()">
+          <h4>Completed tasks</h4>
+          <accordion close-others="true" id="pk-archive">
+            <accordion-group ng-repeat="task in model.tasks">
+              <accordion-heading><pk-archive-header task="task"></pk-archive-header></accordion-heading>
+              <pk-archive-task task="task" save-task="saveChanges(task)"></pk-archive-task>
+            </accordion-group>
+          </accordion>
         </pk-tab>
       </div>
+
     </pk-main-view>
   </div>
   {% endverbatim %}
