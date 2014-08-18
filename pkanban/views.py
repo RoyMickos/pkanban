@@ -2,7 +2,7 @@
 from models import PkTask, PkWipTasks, PkValuestream, PkWorkPhases
 from models import WipLimitReached, TaskAlreadyCompleted, TaskNotInThisStream
 import logging, json
-import pkutil
+
 from forms import *
 from django.shortcuts import get_object_or_404, render_to_response, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
@@ -36,32 +36,14 @@ def load_app(request):
   c.update(csrf(request))
   return render_to_response('pkanban/pkanban_index.html', c)
 
-@csrf_protect
-def show_board(request):
-    """show_board
-    show the main display of the kanban app
-    """
-    c = RequestContext(request)
-    c.update(csrf(request))
-    c.update({'dev': dev})
-    return render_to_response('pkanban.html', c)
+#def show_app(request):
+#  c = RequestContext(request)
+#  c.update(csrf(request))
+#  return render_to_response('pkanban/pkanban_index.html', c)
 
-def show_spa(request):
-    """
-    show the single page application version of the ui
-    """
-    c = RequestContext(request)
-    print request.META['HTTP_HOST']
-    print request.build_absolute_uri(c['STATIC_URL']+'index.html')
-    return HttpResponseRedirect(request.build_absolute_uri(c['STATIC_URL']+'index.html'))
-    #c = RequestContext(request)
-    #return render_to_response('index.html', c)
-
-def show_app(request):
-  c = RequestContext(request)
-  c.update(csrf(request))
-  return render_to_response('pkanban/pkanban_index.html', c)
-
+#
+# legacy code left here to wait until we reimplement this in new fw
+#
 def setValuestream(aTask, requestData, valuestreams, log):
     sname = requestData['valuestream'].strip()
     aStream = None
@@ -86,101 +68,6 @@ def setValuestream(aTask, requestData, valuestreams, log):
             return(False, "ok")
     else:
         return (True, "Valuestream is empty.")
-
-
-@csrf_protect
-def viewTask(request, object_id):
-    c = RequestContext(request)
-    log = logging.getLogger('pkanban.application')
-    aTask = PkTask.objects.get(pk=object_id)
-    valuestreams = PkValuestream.objects.all()
-    # post request is an AJAX call
-    if request.method == 'POST':
-        requestData = pkutil.parseRequest(request)
-        print requestData
-        aTask.update(requestData)
-        aTask.save()
-        hasError = False
-        msg = None
-        if (('valuestream' in requestData) and (aTask.valuestream == None)):
-            hasError, msg = setValuestream(aTask, requestData, valuestreams, log)
-        if hasError:
-            responseData = {'status': 'error', 'msg': msg}
-        else:
-            responseData = {'status': 'OK', 'url': aTask.get_absolute_url()}
-        return HttpResponse(json.dumps(responseData), content_type='application/json')
-    c.update({'task': aTask, 'isCompleted': aTask.completed is not None})
-    if aTask.valuestream is not None:
-        print aTask.valuestream.getStreamStatus(aTask)
-        c.update({'status': aTask.valuestream.getStreamStatus(aTask)})
-    c.update(csrf(request))
-    c.update({'valuestreams': valuestreams, 'dev': dev})
-    return render_to_response('TaskView.html',c)
-
-def advanceTask(request):
-    # handle ajax request to proceed with task
-    receivedData = pkutil.parseRequest(request)
-    responseData = dict()
-    taskId = int(receivedData['taskid'])
-    aTask = PkTask.objects.get(pk=taskId)
-    try:
-        aTask.valuestream.nextPhase(aTask, (receivedData['forced'] == 'true'))
-    except WipLimitReached:
-        responseData = {'status': 'Error', 'msg': 'Error: next phase has no capacity'}
-    except TaskAlreadyCompleted:
-        responseData = {'status': 'Error', 'msg': 'Error: task has been completed already'}
-    except TaskNotInThisStream:
-        responseData = {'status': 'Error', 'msg': 'Internal Error: wrong Valuestream'}
-    else:
-        responseData = {'status': 'OK'}
-    return HttpResponse(json.dumps(responseData), content_type='application/json')
-
-def getDescription(request, object_id):
-    """getDescription - returns description text for task <object_id>
-    Description can be written as html, so it can be queried as ajax as well. This is
-    needed in order to properly handle html editors for editing the description.
-    """
-    c = RequestContext(request)
-    aTask = PkTask.objects.get(pk=object_id)
-    return HttpResponse(pkutil.encodeDescription(aTask.description))
-
-@csrf_protect
-def addTask(request):
-    c = RequestContext(request)  # needed for static files to work
-    log = logging.getLogger('pkanban.application')
-    # post request is an AJAX call
-    if request.POST:
-        requestData = pkutil.parseRequest(request)
-        requestData['valuestream'] = None
-        newTask = PkTask(**requestData)
-        newTask.initialize()
-        newTask.save()
-        return HttpResponse(json.dumps({'status': 'OK', 'url': '/pkanban/Task/NewTask/'}),
-                            content_type='application/json')
-    else:
-        responseData = {'name': '', 'description': ''}
-    c.update(csrf(request))
-    c.update({'task': responseData, 'isNew': True, 'dev': dev})
-    return render_to_response('NewTask.html',c)
-
-def getWip(request):
-    """getWip
-    This generates an AJAX response of work-in-progress tasks
-    """
-    c = RequestContext(request)
-    wiptasks = PkWipTasks.objects.all().order_by('phase')
-    valuestreams = PkValuestream.objects.all()
-    c.update({'tasks': wiptasks, 'streams': valuestreams})
-    return render_to_response('wip.html', c)
-
-def getBacklog(request):
-    """getBacklog
-    This generates an AJAX response (html) of backlog tasks
-    """
-    c = RequestContext(request)
-    backlog = PkTask.objects.filter(completed__exact=None, valuestream__exact=None)
-    c.update({'backlog': backlog})
-    return render_to_response('backlog.html', c)
 
 def editBoard(request):
     """editBoard
@@ -225,41 +112,10 @@ def newStream(request):
         aResponse = {'status': 'OK', 'data': receivedData['name']}
     return HttpResponse(json.dumps(aResponse), content_type='application/json')
 
-def addEffort(request):
-    receivedData = pkutil.parseRequest(request)
-    try:
-        aTask = PkTask.objects.get(pk = receivedData['taskId'])
-        if aTask.effort is None:
-            aTask.effort = int(receivedData['minutes'])
-        else:
-            aTask.effort += int(receivedData['minutes'])
-        aTask.log("Effort completed: %s" % receivedData['minutes'])
-        aTask.save()
-    except Exception as e:
-        responseData = {'status': 'Error', 'msg': str(e)}
-    else:
-        responseData = {'status': 'OK', 'effort': aTask.effort}
-    return HttpResponse(json.dumps(responseData), content_type='application/json')
-
-def showArchive(request):
-    c = RequestContext(request)
-    completed = PkTask.objects.exclude(completed__exact=None).order_by('-completed')
-    c.update({'tasks': completed, 'dev': dev})
-    return render_to_response('archive.html', c)
-
-def speedyArchieve(request):
-    receivedData = pkutil.parseRequest(request)
-    aTask = PkTask.objects.get(pk=int(receivedData['taskid']))
-    # check if task is in wip
-    s = PkWipTasks.objects.filter(task=aTask)
-    if len(s) == 1:
-        s[0].delete()
-    aTask.valuestream = None
-    aTask.complete()
-    aTask.save()
-    return HttpResponse(json.dumps({'status': 'OK', 'url': '/pkanban/'}), content_type='application/json')
-
+#
 # rest framework on class-based views
+#
+
 class TaskViewSet(viewsets.ModelViewSet):
   queryset = PkTask.objects.all()
   serializer_class = TaskSerializer
@@ -387,26 +243,3 @@ class ValueStreamViewSet(viewsets.ModelViewSet):
     for phase in phase_list:
       stream.addPhase(phase)
     return Response("OK", status=status.HTTP_200_OK)
-
-"""
-def newStream(request):
-    # handle ajax request to create new valuestream
-    try:
-        receivedData = pkutil.parseRequest(request)
-        # we can't create a many-to-many relationship before the new valuestream has an id
-        # so we're fetching phases from database first, so that if any errors occur they
-        # will create an exception before we add the new stream to database
-        phases = list()
-        for aPhaseName in receivedData['phases'].split(','):
-            if aPhaseName.strip() != '':
-                phases.append(PkWorkPhases.objects.get(name = aPhaseName))
-        newVStream = PkValuestream.objects.create(streamname = receivedData['name'])
-        for aPhase in phases:
-            newVStream.addPhase(aPhase)
-    except Exception as e:
-        aResponse = {'status': 'Error', 'data': str(e)}
-        print e
-    else:
-        aResponse = {'status': 'OK', 'data': receivedData['name']}
-    return HttpResponse(json.dumps(aResponse), content_type='application/json')
-"""

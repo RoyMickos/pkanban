@@ -185,7 +185,6 @@ pkanbanApp.controller('NewTaskCtrl', ['$scope', '$modal', '$log', 'Restangular',
         $scope.new_task.name = undefined;
         $scope.new_task.description = undefined;
         $scope.openSemaphore();
-        console.log('New task has been sent: ' + NewTask.taskSubmitSemaphore);
       }, function(err) {
         console.log("Error submitting new task:");
         console.log(err);

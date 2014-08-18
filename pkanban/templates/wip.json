@@ -1,7 +1,0 @@
-wiptasks = [ {% for entry in tasks %}
-    { id: {{ entry.task.id }}, name: "{{ entry.task.name }}", description: "{{ entry.task.description }}", valuestream: "{{ entry.task.valuestream.streamname }}" },
-    {% endfor %} ];
-valuestreams = [ {% for stream in streams %}
-    { name: "{{stream.streamname}}", phases: [ {% for phase in stream.phases.all %} "{{phase.name}}", {% endfor %} ] }
-    {% endfor %} ];
-    
