@@ -75,7 +75,8 @@
                                      streams="model.valuestreams"
                                      candidate="model.stream"
                                      select="selectValuestream()"
-                                     error="model.error" error-Action="dismiss()">
+                                     error="model.error" error-Action="dismiss()"
+                                     delete-task="deleteTask(task)">
               </pk-select-valuestream>
               <pk-task-edit task="task"></pk-task-edit>
               <!--

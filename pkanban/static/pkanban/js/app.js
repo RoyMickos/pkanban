@@ -158,18 +158,38 @@ pkanbanApp.service('NewTask', ['$rootScope',
       description: undefined,
       effort: 0
     };
+    this.taskSubmitSemaphore = false;
+    this.openSemaphore = function() {
+      this.taskSubmitSemaphore = true;
+    };
+    this.closeSemaphore = function () {
+      this.taskSubmitSemaphore = false;
+    };
   }
 ]);
 
 pkanbanApp.controller('NewTaskCtrl', ['$scope', '$modal', '$log', 'Restangular', 'NewTask',
   function($scope, $modal, $log, Restangular, NewTask) {
+
+    var pkApi = Restangular.one('pk/');
+
     $scope.new_task = NewTask.new_task;
+    $scope.openSemaphore = function () {
+      NewTask.openSemaphore();
+    }
+    //$scope.semaphore = NewTask.taskSumbitSemaphore;
 
     $scope.submit_task = function(){
-      console.log('Submit task called for:');
-      console.log($scope.new_task);
-      $scope.new_task.name = undefined;
-      $scope.new_task.description = undefined;
+      pkApi.post('task/', $scope.new_task)
+      .then(function () {
+        $scope.new_task.name = undefined;
+        $scope.new_task.description = undefined;
+        $scope.openSemaphore();
+        console.log('New task has been sent: ' + NewTask.taskSubmitSemaphore);
+      }, function(err) {
+        console.log("Error submitting new task:");
+        console.log(err);
+      });
     };
 
     $scope.open = function(){

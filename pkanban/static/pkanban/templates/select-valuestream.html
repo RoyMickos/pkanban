@@ -6,6 +6,8 @@
     </select>
     <button type="button" class="btn btn-default pk-valuestream-action" ng-disabled="!candidate"
             ng-click="select()">Confirm</button>
+    <button type="button" class="btn btn-danger pk-valuestream-action pull-right"
+            ng-click="deleteTask()">Delete Task</button>
   </form>
   <alert type="danger" close="errorAction()" ng-show="error">{{error}}</alert>
 </div>

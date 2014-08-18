@@ -15,7 +15,7 @@ class TaskSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.PkTask
     fields = ('id', 'name', 'description', 'completed', 'effort', 'lastmodify', 'valuestream', 'logs')
-    read_only_fields = ('effort', 'valuestream', 'completed')
+    read_only_fields = ('valuestream', 'completed')
 
 class PaginatedTaskSerializer(PaginationSerializer):
   class Meta:

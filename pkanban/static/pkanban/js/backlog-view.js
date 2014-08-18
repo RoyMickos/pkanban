@@ -1,8 +1,8 @@
 /**
     backlog view
 */
-pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
-  function($scope, Restangular) {
+pkanbanApp.controller('backlogController', ['$scope', 'Restangular', 'NewTask',
+  function($scope, Restangular, NewTask) {
 
   var pkApi = Restangular.one('pk/');
 
@@ -15,6 +15,10 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
   }
   $scope.unsavedChanges = false;
   $scope.currentTaskChanged = false;
+
+  $scope.closeSemaphore = function() {
+    NewTask.closeSemaphore();
+  };
 
   $scope.updateModel = function() {
     $scope.model.current_task = undefined;
@@ -45,7 +49,17 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
     $scope.model.stream = undefined;
     $scope.currentTaskChanged = true;
     $scope.unsavedChanges = false;
-  }
+  };
+
+  $scope.deleteTask = function(task) {
+    task.remove()
+    .then(function () {
+      $scope.updateModel();
+    }, function(err) {
+      console.log("Removing task failed:");
+      console.log("err");
+    });
+  };
 
   $scope.$watch("model.current_task",
      function(newValue, oldValue) {
@@ -59,21 +73,20 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular',
      true
   );
 
+  $scope.$watch(function() {
+    return NewTask.taskSubmitSemaphore;
+  },
+    function(newValue, oldValue){
+      if (newValue) {
+        $scope.updateModel();
+        $scope.closeSemaphore();
+      }
+    }
+  );
+
   $scope.dismiss = function() {
     $scope.model.error = undefined;
   }
-
-  /*
-  $scope.$watch("model.stream",
-    function(newValue, oldValue) {
-      if (newValue === oldValue) {
-        return
-      } else {
-        selectValuestream();
-      }
-    }
-  )
-  */
 
   $scope.selectValuestream = function(){
     if ($scope.model.current_task) {
@@ -98,7 +111,8 @@ pkanbanApp.directive('pkSelectValuestream', function() {
       candidate: '=',
       select: '&',
       error: '=',
-      errorAction: '&'
+      errorAction: '&',
+      deleteTask: '&'
     },
     templateUrl: "/static/pkanban/templates/select-valuestream.html"
   };
