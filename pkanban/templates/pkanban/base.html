@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load staticfiles %}
     {% block head_css %}
+      <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/bootstrap.css" type="text/css" media="screen" />
       <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/style.css" type="text/css" media="screen" />
       <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
     {% endblock %}
@@ -12,10 +13,14 @@
   </head>
   <body {% block body_params %}{% endblock %}>
     {% if user.is_authenticated %}Welcome, {{user.username}}. {% if not demo %}<a href="/pkanban/logout/">Logout</a>{% endif %}{% endif %}
-    {% if demo %}<p><hr></p><p>
+    {% if demo %}
+    <hr>
+    <blockquote>
+    <p class="bg-success">
     Welcome to the demo installation of my personal kanban application. You can freely explore around here
     (within reasonable limits, of course). But please remember that all tasks will be come persistent and
-    visible to other visitors as well. </p><hr>
+    visible to other visitors as well.
+    </p></blockquote><hr>
     {% endif %}
     {% block content %}
     {% endblock %}
