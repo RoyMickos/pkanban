@@ -54,7 +54,7 @@
                 <pk-task-stream-banner situation="getSituation(task)"
                     advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
                 </pk-task-stream-banner>
-                <button type="button" class="btn btn-success"><i class="fa fa-save" ng-click="saveCurrentTask()"></i></button>
+                <button type="button" class="btn btn-success" ng-click="saveCurrentTask()"><i class="fa fa-save"></i></button>
                 <pk-pomodoro-timer></pk-pomodoro-timer>
               </div>
               <pk-task-edit task="datamodel.current_task"></pk-task-edit>
@@ -76,7 +76,7 @@
                                      candidate="model.stream"
                                      select="selectValuestream()"
                                      error="model.error" error-Action="dismiss()"
-                                     delete-task="deleteTask(task)">
+                                     delete-task="deleteTask(task)" save="saveTask(task)">
               </pk-select-valuestream>
               <pk-task-edit task="task"></pk-task-edit>
             </accordion-group>

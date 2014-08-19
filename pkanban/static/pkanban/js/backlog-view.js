@@ -62,6 +62,10 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular', 'NewTask',
     });
   };
 
+  $scope.saveTask = function(task) {
+    task.put();
+  }
+
   $scope.$watch("model.current_task",
      function(newValue, oldValue) {
        if ($scope.currentTaskChanged){
@@ -113,7 +117,8 @@ pkanbanApp.directive('pkSelectValuestream', function() {
       select: '&',
       error: '=',
       errorAction: '&',
-      deleteTask: '&'
+      deleteTask: '&',
+      save: '&'
     },
     templateUrl: "/static/pkanban/templates/select-valuestream.html"
   };
