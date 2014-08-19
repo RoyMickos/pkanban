@@ -32,6 +32,9 @@ LOG = logging.getLogger(__name__)
 #@login_required(login_url='/pkanban/login/')
 # not using decorator in order to perform autologin in demo
 def load_app(request):
+  # we use a proxy at the front end so we need to workaround the forwarded host
+  original_host = request.META.get('X-Forwarded-Host')
+  LOG.debug(original_host)
   if hasattr(settings, 'DEMO'):
     demo = settings.DEMO
   else:
@@ -54,7 +57,10 @@ def load_app(request):
       else:
         return redirect(something_wrong)
     else:
-      return redirect('/pkanban/login/?next=/pkanban/')
+      if original_host is not None:
+        return redirect(original_host + '/pkanban/login/?next=/pkanban/')
+      else:
+        return redirect('/pkanban/login/?next=/pkanban/')
 
 def something_wrong(request):
   return render_to_response('pkanban/oops.html')
