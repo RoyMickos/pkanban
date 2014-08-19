@@ -18,6 +18,7 @@ pkanban.egg-info/
 etc/django-pkanban/pkanban.egg-info/
 # site settings
 project/
+static/
 devel_site/
 manage.py
 etc/chef-repo/.chef/

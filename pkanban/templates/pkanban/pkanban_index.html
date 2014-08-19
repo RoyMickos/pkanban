@@ -1,13 +1,17 @@
 {% extends "pkanban/base.html" %}
 {% load staticfiles %}
+{% load compress %}
 
 {% block head_css %}
   {{block.super}}
+  {% compress css %}
   <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/font-awesome.css" type="text/css" media="screen" />
+  {% endcompress %}
 {% endblock %}
 
 {% block body_js %}
   {{block.super}}
+  {% compress js %}
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/jquery-1.11.1.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/lodash.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular.js"></script>
@@ -16,11 +20,12 @@
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-cookies.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/restangular.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/ui-bootstrap-tpls-0.11.0.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/ckeditor/ckeditor.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/app.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/wip-view.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/backlog-view.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/archive-view.js"></script>
+  {% endcompress %}
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/ckeditor/ckeditor.js"></script>
 {% endblock %}
 
 {% block body_params %}ng-app="pkanbanApp"{% endblock %}

@@ -4,9 +4,12 @@
     <meta charset='UTF-8' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load staticfiles %}
+    {% load compress %}
     {% block head_css %}
+      {% compress css %}
       <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/bootstrap.css" type="text/css" media="screen" />
       <link rel="stylesheet" href="{{ STATIC_URL }}pkanban/css/style.css" type="text/css" media="screen" />
+      {% endcompress %}
       <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
     {% endblock %}
     <title>Personal Kanban</title>
