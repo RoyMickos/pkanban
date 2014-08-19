@@ -30,6 +30,7 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular', 'NewTask',
       console.log("Error while retrieving backlog:");
       console.log(err);
     });
+    $scope.model.valuestreams = [];
     pkApi.getList('valuestream')
     .then(function(valuestreams){
       angular.forEach(valuestreams, function(value, index){
