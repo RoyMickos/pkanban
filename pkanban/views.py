@@ -58,9 +58,9 @@ def load_app(request):
         return redirect(something_wrong)
     else:
       if original_host is not None:
-        return redirect(original_host + '/pkanban/login/?next=/pkanban/')
+        return redirect(original_host + settings.LOGIN_URL +'?next=' + settings.BASE_URL)
       else:
-        return redirect('/pkanban/login/?next=/pkanban/')
+        return redirect(settings.LOGIN_URL +'?next=' + settings.BASE_URL)
 
 def something_wrong(request):
   return render_to_response('pkanban/oops.html')
