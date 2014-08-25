@@ -146,10 +146,6 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
        }
      }
 
-     $scope.init = function() {
-       console.log("Wip init called");
-     };
-
      $scope.$watch("datamodel.current_task",
         function(newValue, oldValue) {
           if ($scope.currentTaskChanged){
@@ -161,7 +157,8 @@ pkanbanApp.controller('wipController', ['$scope', 'Restangular',
         },
         true
      );
-     //$scope.updateDatamodel();
+
+     $scope.updateDatamodel();
 
 }]);
 
@@ -245,7 +242,7 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
     });
 
     // requires jquery, does not work with jqLite
-    element.on('click', '.fa-clock-o', function() {
+    element.on('click', '#timer-straight', function() {
       if (timerRunning) {
         stopTimer();
       } else {
@@ -254,7 +251,7 @@ pkanbanApp.directive('pkPomodoroTimer', ['$interval', function($interval) {
       }
     });
 
-    element.on('click', '.fa-circle-o-notch', function() {
+    element.on('click', '#timer-pomodoro', function() {
       if (timerRunning){
         stopTimer();
       } else {

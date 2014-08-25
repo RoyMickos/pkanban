@@ -105,6 +105,8 @@ pkanbanApp.controller('backlogController', ['$scope', 'Restangular', 'NewTask',
     //$scope.model.error = "selecting valuestream " + $scope.model.stream + " for task " + $scope.model.current_task.name;
   };
 
+  $scope.updateModel();
+
 }]);
 
 pkanbanApp.directive('pkSelectValuestream', function() {

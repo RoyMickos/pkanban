@@ -1,0 +1,6 @@
+<accordion close-others="true" id="pk-archive">
+  <accordion-group ng-repeat="task in model.tasks">
+    <accordion-heading><pk-archive-header task="task"></pk-archive-header></accordion-heading>
+    <pk-archive-task task="task" save-task="saveChanges(task)"></pk-archive-task>
+  </accordion-group>
+</accordion>

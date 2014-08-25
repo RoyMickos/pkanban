@@ -15,7 +15,7 @@
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/jquery-1.11.1.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/lodash.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular.js"></script>
-  <!-- script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-resource.js"></script -->
+  <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-ui-router.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-sanitize.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/angular-cookies.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}pkanban/js/restangular.js"></script>
@@ -33,76 +33,33 @@
 {% block content %}
 
   {% verbatim %}
-  <div class="container-fluid">
+
 
     <div class="row">
-      <div class="col-md-8 col-xs-8"><h3> Personal Kanban </h3></div>
       <!-- Modal for creating new tasks -->
       <div class="col-md-4 col-xs-4">
         <div ng-controller="NewTaskCtrl">
-          <button class="btn btn-default pull-right" ng-click="open()">New task</button>
+          <button class="btn btn-success" ng-click="open()">New task</button>
         </div>
       </div>
     </div>
-
-    <pk-main-view>
-
-      <div ng-controller="wipController"> <!-- new wip -->
-        <pk-tab title="work-in-progress" init="updateDatamodel()">
-          <h4> Work In Progress </h4>
-          <accordion close-others="true" id="pk-wip">
-            <accordion-group ng-repeat="task in datamodel.wip">
-              <accordion-heading>
-                <span ng-click="set_current_task(task)">{{task.name}}</span>
-              </accordion-heading>
-              <div class="pk-tool-wrapper">
-                <pk-task-stream-banner situation="getSituation(task)"
-                    advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
-                </pk-task-stream-banner>
-                <button type="button" class="btn btn-success" ng-click="saveCurrentTask()"><i class="fa fa-save"></i></button>
-                <pk-pomodoro-timer></pk-pomodoro-timer>
-              </div>
-              <pk-task-edit task="datamodel.current_task"></pk-task-edit>
-            </accordion-group>
-          </accordion>
-        </pk-tab>
+    <p></p>
+    <nav class="pk-tabbable navbar navbar-inverse" role="navigation">
+      <div class="navbar-header">
+        <a class="navbar-brand" ui-sref="#">Personal Kanban</a>
       </div>
+      <ul class="nav navbar-nav">
+        <li ui-sref-active="active"><a ui-sref="wip">WIP</a></li>
+        <li ui-sref-active="active"><a ui-sref="backlog">Backlog</a></li>
+        <li ui-sref-active="active"><a ui-sref="done">Done</a></li>
+      </ul>
+    </nav>
 
-      <div ng-controller="backlogController">
-        <pk-tab title="backlog" init="updateModel()">
-          <h4> Things to do, good intentions... </h4>
-          <accordion close-others="true" id="pk-backlog">
-            <accordion-group ng-repeat="task in model.tasks">
-              <accordion-heading>
-                <span ng-click="saveChanges(task)">{{task.name}}</span>
-              </accordion-heading>
-              <pk-select-valuestream task="task"
-                                     streams="model.valuestreams"
-                                     candidate="model.stream"
-                                     select="selectValuestream()"
-                                     error="model.error" error-Action="dismiss()"
-                                     delete-task="deleteTask(task)" save="saveTask(task)">
-              </pk-select-valuestream>
-              <pk-task-edit task="task"></pk-task-edit>
-            </accordion-group>
-          </accordion>
-        </pk-tab>
-      </div>
+    <div class="pk-tab-content">
+      <div ui-view></div>
+    </div>
 
-      <div ng-controller="archiveController">
-        <pk-tab title="done" init="updateModel()">
-          <h4>Completed tasks</h4>
-          <accordion close-others="true" id="pk-archive">
-            <accordion-group ng-repeat="task in model.tasks">
-              <accordion-heading><pk-archive-header task="task"></pk-archive-header></accordion-heading>
-              <pk-archive-task task="task" save-task="saveChanges(task)"></pk-archive-task>
-            </accordion-group>
-          </accordion>
-        </pk-tab>
-      </div>
-
-    </pk-main-view>
-  </div>
+  
   {% endverbatim %}
 
 <audio id="timer-expired-alert"><source src="{{ STATIC_URL }}pkanban/audio/tom_jerry_msg_tone.mp3" type="audio/mpeg"></source></audio>

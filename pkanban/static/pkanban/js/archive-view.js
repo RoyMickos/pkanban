@@ -24,6 +24,8 @@ pkanbanApp.controller('archiveController', ['$scope', 'Restangular',
       console.log(task);
     };
 
+    $scope.updateModel();
+
   }
 ]);
 

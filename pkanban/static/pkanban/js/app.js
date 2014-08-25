@@ -1,37 +1,36 @@
-// ngResource
-//var pkanbanApi = angular.module('pkanban.api',["restangular","ngSanitize"]);
 
-/*
-pkanbanApi.config(['$resourceProvider', function($resourceProvider) {
-  $resourceProvider.defaults.stripTrailingSlashes = false;
-}]);
+var pkanbanApp = angular.module('pkanbanApp',["ui.router", "ui.bootstrap", "restangular", "ngSanitize"]);
+
+/**
+  UI-Router configuration
 */
 
-/*
-pkanbanApi.factory('Wip', ['$resource', function($resource) {
-  return $resource('/pk/wip', {}, {
-    query: {method: 'GET', params: {}, isArray:true}
-  }, {stripTrailingSlashes: false});
+pkanbanApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+
+  $urlRouterProvider.otherwise('/wip');
+
+  $stateProvider
+  .state('wip', {
+    url: '/wip',
+    templateUrl: '/static/pkanban/templates/wip-tab.html',
+    controller: 'wipController'
+  })
+  .state('backlog', {
+    url: '/backlog',
+    templateUrl: '/static/pkanban/templates/backlog-tab.html',
+    controller: 'backlogController'
+  })
+  .state('done', {
+    url: '/done',
+    templateUrl: '/static/pkanban/templates/done-tab.html',
+    controller: 'archiveController'
+  });
+
 }]);
 
-pkanbanApi.factory('Task', ['$resource', function($resource){
-  return $resource('/pk/task/:id/:action/', {}, {
-    query: {method: 'GET', params: {}, isArray:false},
-    get: {method: 'GET', params: {id: '@id'}},
-    add_effort: {method: 'POST', params: {id: '@id', action: 'add_effort'}}
-  }, {stripTrailingSlashes: false});
-}]);
-
-pkanbanApi.factory('Valuestream', ['$resource', function($resource) {
-  return $resource('/pk/valuestream/:streamname', {}, {
-    query: {method: 'GET', params: {}, isArray:true},
-    set: {method: 'GET', params: {streamname: '@streamname'}}
-  }, {stripTrailingSlashes: false});
-}]);
+/**
+  Directives
 */
-
-var pkanbanApp = angular.module('pkanbanApp',["ui.bootstrap", "restangular", "ngSanitize"]);
-
 
 pkanbanApp.directive('pkTaskView', function() {
   return {

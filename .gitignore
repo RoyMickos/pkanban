@@ -3,14 +3,7 @@
 *.pyo
 *.log
 # static javascript libraries and compiled files
-pkanban/static/spa/src/dgrid/
-pkanban/static/spa/src/dijit/
-pkanban/static/spa/src/dojo/
-pkanban/static/spa/src/dojox/
-pkanban/static/spa/src/put-selector/
-pkanban/static/spa/src/util/
-pkanban/static/spa/src/xstyle/
-pkanban/static/spa/lib/
+pkanban/static/spa/
 # setuptools
 dist/
 etc/django-pkanban/dist

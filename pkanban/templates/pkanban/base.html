@@ -15,15 +15,16 @@
     <title>Personal Kanban</title>
   </head>
   <body {% block body_params %}{% endblock %}>
-    {% if user.is_authenticated %}Welcome, {{user.username}}. {% if not demo %}<a href="/pkanban/logout/">Logout</a>{% endif %}{% endif %}
+    <div class="container-fluid">
+    {% if user.is_authenticated %}<p class="pull-right">Welcome, {{user.username}}.
+      {% if not demo %}<a href="/pkanban/logout/" class="btn btn-danger btn-xs">Logout</a>{% endif %}</p>{% endif %}
     {% if demo %}
     <hr>
-    <blockquote>
     <p class="bg-success">
     Welcome to the demo installation of my personal kanban application. You can freely explore around here
     (within reasonable limits, of course). But please remember that all tasks will be come persistent and
     visible to other visitors as well.
-    </p></blockquote><hr>
+    </p><hr>
     {% endif %}
     {% block content %}
     {% endblock %}
@@ -31,5 +32,6 @@
     {% endblock %}
     {% block end_init %}
     {% endblock %}
+    </div>
   </body>
 </html>

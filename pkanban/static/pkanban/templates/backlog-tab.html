@@ -1,0 +1,15 @@
+<accordion close-others="true" id="pk-backlog">
+  <accordion-group ng-repeat="task in model.tasks">
+    <accordion-heading>
+      <span ng-click="saveChanges(task)">{{task.name}}</span>
+    </accordion-heading>
+    <pk-select-valuestream task="task"
+                           streams="model.valuestreams"
+                           candidate="model.stream"
+                           select="selectValuestream()"
+                           error="model.error" error-Action="dismiss()"
+                           delete-task="deleteTask(task)" save="saveTask(task)">
+    </pk-select-valuestream>
+    <pk-task-edit task="task"></pk-task-edit>
+  </accordion-group>
+</accordion>

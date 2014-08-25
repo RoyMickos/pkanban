@@ -1,0 +1,15 @@
+<accordion close-others="true" id="pk-wip">
+  <accordion-group ng-repeat="task in datamodel.wip">
+    <accordion-heading>
+      <span ng-click="set_current_task(task)">{{task.name}}</span>
+    </accordion-heading>
+    <div class="pk-tool-wrapper">
+      <pk-task-stream-banner situation="getSituation(task)"
+          advance-current-task="advanceCurrentTask()" action-tooltip="{{taskProceedTooltip}}">
+      </pk-task-stream-banner>
+      <button type="button" class="btn btn-success" ng-click="saveCurrentTask()"><i class="fa fa-save"></i></button>
+      <pk-pomodoro-timer></pk-pomodoro-timer>
+    </div>
+    <pk-task-edit task="datamodel.current_task"></pk-task-edit>
+  </accordion-group>
+</accordion>
