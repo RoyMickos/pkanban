@@ -33,7 +33,10 @@ LOG = logging.getLogger(__name__)
 # not using decorator in order to perform autologin in demo
 def load_app(request):
   # we use a proxy at the front end so we need to workaround the forwarded host
-  original_host = request.META.get('X-Forwarded-Host')
+  if hasattr(settings, 'ORIGINAL_HOST'):
+    original_host = settings.ORIGINAL_HOST
+  else:
+    original_host = None
   LOG.debug(original_host)
   if hasattr(settings, 'DEMO'):
     demo = settings.DEMO
