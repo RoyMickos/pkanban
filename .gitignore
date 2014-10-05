@@ -12,8 +12,9 @@ etc/django-pkanban/pkanban.egg-info/
 # site settings
 project/
 static/
+staticfiles
 devel_site/
-manage.py
+manage_local.py
 etc/chef-repo/.chef/
 # virtualenv
 venv/
