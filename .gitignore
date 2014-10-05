@@ -23,3 +23,5 @@ develop-eggs/
 eggs/
 parts/
 .installed.cfg
+pkanban.sublime-project
+pkanban.sublime-workspace
