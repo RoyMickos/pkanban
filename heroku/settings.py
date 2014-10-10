@@ -55,6 +55,11 @@ ROOT_URLCONF = 'heroku.urls'
 
 WSGI_APPLICATION = 'heroku.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -79,11 +84,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = '/pkanban/login/'
+BASE_URL = '/pkanban/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
-STATIC_URL = '/static/'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url

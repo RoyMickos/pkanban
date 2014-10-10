@@ -26,3 +26,4 @@ parts/
 .installed.cfg
 pkanban.sublime-project
 pkanban.sublime-workspace
+local.txt
